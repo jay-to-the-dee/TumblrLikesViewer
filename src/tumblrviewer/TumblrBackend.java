@@ -1,0 +1,352 @@
+package tumblrviewer;
+
+import com.tumblr.jumblr.*;
+import com.tumblr.jumblr.exceptions.JumblrException;
+import com.tumblr.jumblr.types.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+
+/**
+ *
+ * @author jonathan
+ */
+public class TumblrBackend
+{
+    private static final int POSTS_LOADED_PER_UPDATE = 20;
+    private static final boolean FULLSIZE_PHOTOS = false;
+    static final int PHOTO_PREFERRED_SIZE = 500; // (100/250/400/500)
+    private static final int DEFAULT_AVATAR_SIZE = 16;
+    final DisplayModes currentDisplayMode;
+    /* End of constants*/
+    private final MainViewGUI gui;
+    private int currentUpdateIndex = 0;
+    private JumblrClient client;
+    private User user;
+    final String guiTitle;
+    private final String currentlyViewingBlog;
+    static private HashSet<String> allUserFollowing;
+    static private HashSet<String> allUserFollowers;
+
+    public enum DisplayModes
+    {
+        POSTS, LIKES, DASHBOARD
+    };
+
+    public String getCurrentViewingBlog()
+    {
+        return currentlyViewingBlog;
+    }
+
+    public DisplayModes getCurrentDisplayMode()
+    {
+        return currentDisplayMode;
+    }
+
+    public TumblrBackend(MainViewGUI gui, DisplayModes currentDisplayMode, String currentlyViewingBlog)
+    {
+        this.gui = gui;
+        this.currentDisplayMode = currentDisplayMode;
+
+        try
+        {
+            client = new JumblrClient(java.util.ResourceBundle.getBundle("Keys").getString("consumer_key"), java.util.ResourceBundle.getBundle("Keys").getString("consumer_secret"));
+            client.setToken(java.util.ResourceBundle.getBundle("Keys").getString("oauth_token"), java.util.ResourceBundle.getBundle("Keys").getString("oauth_token_secret"));
+            user = client.user();
+        }
+        catch (Exception e)
+        {
+            JOptionPane.showMessageDialog(gui.getJFrame(), e, "Connection Exception", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
+
+        if (currentlyViewingBlog == null)
+        {
+            this.currentlyViewingBlog = user.getName();
+        }
+        else
+        {
+            this.currentlyViewingBlog = currentlyViewingBlog;
+        }
+
+        guiTitle = java.util.ResourceBundle.getBundle("en_gb").getString(currentDisplayMode.name() + " FOR ") + this.currentlyViewingBlog;
+        gui.getJFrame().setTitle(guiTitle);
+    }
+
+    public void reblogThis(Post post)
+    {
+        try
+        {
+            //client.postReblog(user.getName(), post.getId(), post.getReblogKey());
+            post.reblog(user.getName());
+        }
+        catch (Exception e)
+        {
+        }
+    }
+
+    public void tumblrLoadMore()
+    {
+        tumblrUpdate(currentUpdateIndex);
+        currentUpdateIndex++;
+    }
+
+    private void tumblrUpdate(int offsetIndex)
+    {
+        Map<String, Object> params = new HashMap<>();
+        /*if (currentDisplayMode == DisplayModes.DASHBOARD && lastPostId != null)
+         {
+         params.put("since_id", lastPostId);
+         }
+         else
+         {*/
+        params.put("offset", offsetIndex * POSTS_LOADED_PER_UPDATE);
+        /*}*/
+        params.put("limit", POSTS_LOADED_PER_UPDATE);
+        params.put("reblog_info", true);
+        List<Post> posts = null;
+        try
+        {
+            switch (currentDisplayMode)
+            {
+                case POSTS:
+                    posts = client.blogPosts(currentlyViewingBlog, params);
+                    break;
+                case LIKES:
+                    if (isCurrentUsersBlog())
+                    {
+                        posts = client.userLikes(params); //Use different method because current user might have set likes to private
+                }
+                else
+                {
+                    posts = client.blogLikes(currentlyViewingBlog, params);
+                }
+                    break;
+                case DASHBOARD:
+                    posts = client.userDashboard(params);
+                    break;
+            }
+        }
+        catch (Exception e)
+        {
+            System.err.println("Couldn't retrieve ANY posts!"); //NOI18N
+            return;
+        }
+
+        for (Post post : posts)
+        {
+            try
+            {
+                PhotoPost photoPost = PhotoPost.class.cast(post);
+                List<Photo> photosInPost = photoPost.getPhotos();
+                for (Photo photo : photosInPost)
+                {
+
+                    List<PhotoSize> photoSizes = photo.getSizes();
+                    for (PhotoSize photoSize : photoSizes)
+                    {
+                        if (!FULLSIZE_PHOTOS) //The first one is the fullsize photo so this won't run if FULLSIZE_PHOTOS is set to true
+                        {
+                            if (!photoSize.getUrl().contains("_" + PHOTO_PREFERRED_SIZE + "."))
+                            {
+                                continue; //Wrong size so contine
+                            }
+                        }
+                        gui.addImage(photoSize.getUrl(), photoPost, photosInPost.indexOf(photo));
+                        break; //Only add one of the image sizes - we have now done this
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                //e.printStackTrace();
+                //Fail silently so that non-photo posts simply get ignored when the cast fails
+            }
+        }
+    }
+
+    public boolean isCurrentlyLiked(Post post)
+    {
+        String blogName = post.getBlogName();
+        Long postId = post.getId();
+
+        return client.blogPost(blogName, postId).isLiked();
+    }
+
+    public int getCurrentNoteCount(Post post)
+    {
+        String blogName = post.getBlogName();
+        Long postId = post.getId();
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", postId);
+        params.put("reblog_info", true);
+        params.put("notes_info", true);
+
+        java.util.List<Post> posts = client.blogPosts(blogName, params);
+        PhotoPost detailedPhotoPost = PhotoPost.class.cast(posts.get(0));
+
+        return detailedPhotoPost.getNoteCount();
+    }
+
+    public Note[] getCurrentNotes(Post post)
+    {
+        String blogName = post.getBlogName();
+        Long postId = post.getId();
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", postId);
+        params.put("reblog_info", true);
+        params.put("notes_info", true);
+
+        java.util.List<Post> posts = client.blogPosts(blogName, params);
+        PhotoPost detailedPhotoPost = PhotoPost.class.cast(posts.get(0));
+
+        return detailedPhotoPost.getNotes();
+    }
+
+    public ImageIcon getAvatar(String user)
+    {
+        return getAvatar(user, DEFAULT_AVATAR_SIZE);
+    }
+
+    public ImageIcon getAvatar(String user, int avatarSize)
+    {
+        String avatarUrl = "http://api.tumblr.com/v2" + JumblrClient.blogPath(user, "/avatar/" + avatarSize);
+
+        try
+        {
+            URL url = new URL(avatarUrl);
+            return new ImageIcon(url);
+        }
+        catch (MalformedURLException e)
+        {
+            return null;
+        }
+    }
+
+    public boolean canViewLikes()
+    {
+        if (isCurrentUsersBlog() && !client.userLikes().isEmpty())
+        {
+            return true;
+        }
+        try
+        {
+            if (!client.blogInfo(currentlyViewingBlog).likedPosts().isEmpty())
+            {
+                return true;
+            }
+        }
+        catch (JumblrException e)
+        {
+            return false;
+        }
+        return false;
+    }
+
+    public boolean isCurrentUsersBlog()
+    {
+        return client.user().getName().equals(currentlyViewingBlog);
+    }
+
+    public String getCurrentUsersName()
+    {
+        return client.user().getName();
+    }
+
+    public synchronized boolean isFollowing(String user)
+    {
+        return allUserFollowing.contains(user);
+    }
+
+    public synchronized AbstractCollection<String> getAllUserFollowing()
+    {
+        if (allUserFollowing == null)
+        {
+            allUserFollowing = getAllUserFollowingCollection();
+        }
+
+        return allUserFollowing;
+    }
+
+    public synchronized AbstractCollection<String> getAllUserFollowers()
+    {
+        if (allUserFollowers == null)
+        {
+            allUserFollowers = getAllUserFollowersCollection();
+        }
+        return allUserFollowers;
+    }
+
+    private synchronized HashSet<String> getAllUserFollowingCollection()
+    {
+        HashSet<String> followingList = new HashSet<>();
+        final int recordsLoadedPerPage = 20;
+        int totalCount = user.getFollowingCount();
+
+        for (int i = 0; i < (totalCount / recordsLoadedPerPage) + 1; i++)
+        {
+            Map<String, Object> params = new HashMap<>();
+            params.put("offset", (i * recordsLoadedPerPage));
+            params.put("limit", recordsLoadedPerPage);
+            List<Blog> usersFollowing = client.userFollowing(params);
+
+            for (Blog userFollowing : usersFollowing)
+            {
+                followingList.add(userFollowing.getName());
+            }
+        }
+        return followingList;
+    }
+
+    private HashSet<String> getAllUserFollowersCollection()
+    {
+        Blog blog = user.getBlogs().get(0); //TODO: Account for multiple blogs
+        HashSet<String> followersList = new HashSet<>();
+        final int recordsLoadedPerPage = 20;
+        int totalCount = blog.getFollowersCount();
+
+        for (int i = 0; i < (totalCount / recordsLoadedPerPage) + 1; i++)
+        {
+            Map<String, Object> params = new HashMap<>();
+            params.put("offset", (i * recordsLoadedPerPage));
+            params.put("limit", recordsLoadedPerPage);
+            List<User> usersFollowers = blog.followers(params);
+
+            for (User userFollower : usersFollowers)
+            {
+                followersList.add(userFollower.getName());
+            }
+        }
+        return followersList;
+    }
+
+    public void followBlog(String blog)
+    {
+        client.follow(blog);
+        allUserFollowing.add(blog); //Update our internal list
+    }
+
+    public void unfollowBlog(String blog)
+    {
+        client.unfollow(blog);
+        allUserFollowing.remove(blog); //Update our internal list
+    }
+
+    public boolean blogExists(String blogName)
+    {
+        try
+        {
+            client.blogPosts(blogName);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+
+        return true;
+    }
+}
