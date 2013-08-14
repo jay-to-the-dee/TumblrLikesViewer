@@ -37,6 +37,7 @@ public class MainViewGUI
 {
     static final boolean SINGLE_VIEW_MODE = true;
     private static final boolean AUTO_LOAD_AT_PAGE_END = true;
+    private static final ImageIcon loadingImageIcon = new ImageIcon(MainViewGUI.class.getResource("load-avatar-64.gif"), "Loading avatar");
     /* End of constants*/
     private final TumblrBackend tumblrBackend;
     private final JFrame jFrame;
@@ -283,8 +284,7 @@ public class MainViewGUI
         }
         avatarIconViewMenuItem = new JMenuItem();
         avatarIconViewMenuItem.setEnabled(false);
-        URL loadingImgUrl = getClass().getResource("load-avatar-64.gif");
-        avatarIconViewMenuItem.setIcon(new ImageIcon(loadingImgUrl, "Loading avatar"));
+        avatarIconViewMenuItem.setIcon(loadingImageIcon);
         avatarIconViewMenuItem.addActionListener(new avatarIconViewMenuItemActionListener());
         modeSelectMenu.add(avatarIconViewMenuItem);
 
