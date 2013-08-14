@@ -18,6 +18,9 @@ package tumblrviewer;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import static tumblrviewer.MainViewGUI.SINGLE_VIEW_MODE;
 import tumblrviewer.TumblrBackend.DisplayModes;
@@ -73,11 +76,11 @@ public class AddBlogMenuLink implements Runnable
         }
         blogNameMenuItem.addActionListener(new RebloggedFromActionListener());
         menu.add(blogNameMenuItem);
-        
+
         if (LOAD_AVATAR_MENU_ICONS)
         {
             AddMenuItemBlogIcon addMenuItemBlogIcon = new AddMenuItemBlogIcon(blogNameMenuItem);
-            (new Thread(addMenuItemBlogIcon, "Blog Icon MenuItem - " + blogName)).start();
+            addMenuItemBlogIcon.execute();
         }
     }
 
@@ -101,20 +104,33 @@ public class AddBlogMenuLink implements Runnable
         }
     }
 
-    private class AddMenuItemBlogIcon implements Runnable
+    private class AddMenuItemBlogIcon extends SwingWorker<ImageIcon, Object>
     {
         JMenuItem blogNameMenuItem;
 
         public AddMenuItemBlogIcon(JMenuItem blogNameMenuItem)
         {
+            super();
             this.blogNameMenuItem = blogNameMenuItem;
         }
 
         @Override
-        public void run()
+        protected void done()
         {
-            ImageIcon blogAvatarIcon = tumblrBackend.getAvatar(blogName);
-            blogNameMenuItem.setIcon(blogAvatarIcon);
+            try
+            {
+                blogNameMenuItem.setIcon(get());
+            }
+            catch (InterruptedException | ExecutionException ignore)
+            {
+                System.out.println(ignore);
+            }
+        }
+
+        @Override
+        protected ImageIcon doInBackground() throws Exception
+        {
+            return tumblrBackend.getAvatar(blogName);
         }
     }
 }
