@@ -28,8 +28,9 @@ import javax.swing.event.*;
 import tumblrviewer.TumblrBackend.DisplayModes;
 
 /**
- * This class creates the GUI that is the main view that is seen when scrolling 
+ * This class creates the GUI that is the main view that is seen when scrolling
  * through a blog's posts, likes or dashboard.
+ *
  * @author jonathan
  */
 public class MainViewGUI
@@ -54,13 +55,14 @@ public class MainViewGUI
     private JMenu currentUserFollowersMenu;
 
     /**
-     * Creates a new GUI for scrolling through a blog. More than one instance 
-     * can be run at the same time. However every instance of this class will 
+     * Creates a new GUI for scrolling through a blog. More than one instance
+     * can be run at the same time. However every instance of this class will
      * also make a new TumblrBackend class within it.
+     *
      * @param currentDisplayMode - whether to show posts, likes or dashboard
-     * @param blogToView the blog name to view - if null will resolve to the 
+     * @param blogToView the blog name to view - if null will resolve to the
      * current signed in user's home blog
-    */
+     */
     public MainViewGUI(DisplayModes currentDisplayMode, String blogToView)
     {
         jFrame = new JFrame("Tumblr");
@@ -180,6 +182,7 @@ public class MainViewGUI
 
     /**
      * The JFrame that holds this GUI instance
+     *
      * @return the JFrame object
      */
     public JFrame getJFrame()
@@ -247,8 +250,9 @@ public class MainViewGUI
     }
 
     /**
-     * Starts off the main program by opening an instance with the current 
+     * Starts off the main program by opening an instance with the current
      * signed in user's blog posts.
+     *
      * @param args - no arguments accepted currently
      */
     @SuppressWarnings("ResultOfObjectAllocationIgnored")
@@ -278,7 +282,9 @@ public class MainViewGUI
             modeItem.setEnabled(false);
         }
         avatarIconViewMenuItem = new JMenuItem();
-        avatarIconViewMenuItem.setVisible(false);
+        avatarIconViewMenuItem.setEnabled(false);
+        URL loadingImgUrl = getClass().getResource("load-avatar-64.gif");
+        avatarIconViewMenuItem.setIcon(new ImageIcon(loadingImgUrl, "Loading avatar"));
         avatarIconViewMenuItem.addActionListener(new avatarIconViewMenuItemActionListener());
         modeSelectMenu.add(avatarIconViewMenuItem);
 
@@ -341,6 +347,10 @@ public class MainViewGUI
             @Override
             public void run()
             {
+                //Add avatar blog name to end of menu
+                avatarIconViewMenuItem.setText(tumblrBackend.getCurrentViewingBlog());
+                avatarIconViewMenuItem.setEnabled(true);
+
                 modeSelectMenu.setText(tumblrBackend.getCurrentViewingBlog());
                 modeSelectMenu.setEnabled(true);
 
@@ -364,8 +374,6 @@ public class MainViewGUI
 
                 //Add avatar to end of menu
                 avatarIconViewMenuItem.setIcon(tumblrBackend.getAvatar(tumblrBackend.getCurrentViewingBlog(), 64));
-                avatarIconViewMenuItem.setText(tumblrBackend.getCurrentViewingBlog());
-                avatarIconViewMenuItem.setVisible(true);
             }
         }
 
