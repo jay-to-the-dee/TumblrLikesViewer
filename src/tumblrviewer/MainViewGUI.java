@@ -564,10 +564,23 @@ public class MainViewGUI
         }
     }
 
-    private class avatarIconViewMenuItemActionListener implements ActionListener
+    private class avatarIconViewMenuItemActionListener implements ActionListener, Runnable
     {
+        private Thread loaderThread;
+
         @Override
         public void actionPerformed(ActionEvent e)
+        {
+            if (loaderThread != null)
+            {
+                return;
+            }
+            loaderThread = new Thread((Runnable) this);
+            loaderThread.start();
+        }
+
+        @Override
+        public void run()
         {
             final JFrame frame = new JFrame("Avatar viewer");
 
@@ -586,6 +599,8 @@ public class MainViewGUI
             frame.pack();
             frame.setResizable(false);
             frame.setVisible(true);
+            
+            loaderThread = null;
         }
     }
 
