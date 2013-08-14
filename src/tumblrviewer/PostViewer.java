@@ -235,14 +235,15 @@ public abstract class PostViewer
             {
                 try
                 {
-                    String rebloggedFrom = (String) get().get("rebloggedFrom");
+                    final Map<String, Object> map = get();
+                    String rebloggedFrom = (String) map.get("rebloggedFrom");
                     if (rebloggedFrom != null)
                     {
                         goToRebloggedFromItem.addActionListener(new RebloggedFromActionListener(rebloggedFrom));
-                        rebloggedFromMenu.setIcon((Icon) get().get("standardAvatar"));
+                        rebloggedFromMenu.setIcon((Icon) map.get("standardAvatar"));
                         rebloggedFromMenu.setText(java.util.ResourceBundle.getBundle("en_gb").getString("REBLOGGED FROM ") + rebloggedFrom);
                         goToRebloggedFromItem.setText("Go to " + rebloggedFrom);
-                        goToRebloggedFromItem.setIcon((Icon) get().get("bigAvatar"));
+                        goToRebloggedFromItem.setIcon((Icon) map.get("bigAvatar"));
                     }
                     else
                     {
