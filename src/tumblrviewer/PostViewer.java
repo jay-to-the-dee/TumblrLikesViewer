@@ -168,6 +168,7 @@ public abstract class PostViewer
                     Note[] notes = tumblrBackend.getCurrentNotes(photoPost);
                     if (notes == null)
                     {
+                        notesMenu.setEnabled(false);
                         //There are no notes, so return (stops NullPointerException)
                         return;
                     }
@@ -230,6 +231,7 @@ public abstract class PostViewer
         public void run()
         {
             (new Thread(new SetLikeButton())).start();
+            notesMenu.removeAll();
             (new Thread(new SetNotesInfo())).start();
             (new Thread(new SetReblogInfo())).start();
         }
