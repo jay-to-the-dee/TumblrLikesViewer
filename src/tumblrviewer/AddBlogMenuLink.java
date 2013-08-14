@@ -19,6 +19,7 @@ package tumblrviewer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -34,6 +35,7 @@ import tumblrviewer.TumblrBackend.DisplayModes;
 public class AddBlogMenuLink implements Runnable
 {
     private final static boolean LOAD_AVATAR_MENU_ICONS = true;
+    private final static int IMAGE_FETCH_TIMEOUT_SECONDS = 30;
 
     private final TumblrBackend tumblrBackend;
     private final String blogName;
@@ -119,11 +121,16 @@ public class AddBlogMenuLink implements Runnable
         {
             try
             {
-                blogNameMenuItem.setIcon(get());
+                ImageIcon avatarIcon = get(IMAGE_FETCH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                if (avatarIcon == null)
+                {
+                    throw new Exception("Avatar not loaded");
+                }
+                blogNameMenuItem.setIcon(avatarIcon);
             }
-            catch (InterruptedException | ExecutionException ignore)
+            catch (Exception e)
             {
-                System.out.println(ignore);
+                System.err.println(e);
             }
         }
 
