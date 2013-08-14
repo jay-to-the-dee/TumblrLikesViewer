@@ -67,7 +67,7 @@ public class MainViewGUI
     public MainViewGUI(DisplayModes currentDisplayMode, String blogToView)
     {
         jFrame = new JFrame("Tumblr");
-        jFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         tumblrBackend = new TumblrBackend(this, currentDisplayMode, blogToView);
