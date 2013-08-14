@@ -49,6 +49,17 @@ public class PhotoPostViewer extends PostViewer
         Thread loadMainContentThread = new Thread(new LoadMainContent(), "Post Content Loader");
         loadMainContentThread.start();
         refreshControlsThread.start();
+        photoPostAdditions();
+    }
+
+    private void photoPostAdditions()
+    {
+        if (photoPost.getPhotos().size() > 1)
+        {
+            String currentTitle = this.getjFrame().getTitle();
+            String photoPostListProgressText = " (" + (photoNumberInPost + 1) + "/" + photoPost.getPhotos().size() + ")";
+            this.getjFrame().setTitle(currentTitle + photoPostListProgressText);
+        }
     }
 
     private class LoadMainContent implements Runnable

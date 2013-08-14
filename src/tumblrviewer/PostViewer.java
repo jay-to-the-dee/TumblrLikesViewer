@@ -357,4 +357,9 @@ public abstract class PostViewer
             loaderThread = null;
         }
     }
+
+    public JFrame getjFrame()
+    {
+        return jFrame;
+    }
 }
