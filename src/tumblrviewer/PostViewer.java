@@ -159,37 +159,49 @@ public abstract class PostViewer
 
         private class SetNotesInfo implements Runnable
         {
-            private class SetUpNotesMenu implements Runnable
+            private class SetUpNotesMenu extends SwingWorker<Note[], Object>
             {
                 @Override
-                public void run()
+                public void done()
                 {
-                    Note[] notes = tumblrBackend.getCurrentNotes(photoPost);
-                    if (notes == null)
+                    try
+                    {
+                        Note[] notes = get();
+                        if (notes == null)
+                        {
+                            throw new Exception("No notes!");
+                        }
+                        for (Note note : notes)
+                        {
+                            String typePastTense = note.getType();
+                            switch (typePastTense)
+                            {
+                                case "reblog":
+                                    typePastTense = "reblogged";
+                                    break;
+                                case "like":
+                                    typePastTense = "liked";
+                                    break;
+                            }
+
+                            AddBlogMenuLink addBlogMenuLinkThread = new AddBlogMenuLink(tumblrBackend, note.getBlogName(), notesMenu, jFrame);
+                            addBlogMenuLinkThread.setMenuItemText(note.getBlogName() + " " + typePastTense + " this");
+                            addBlogMenuLinkThread.setMainGUIJFrame(mainViewGUI.getJFrame());
+                            new Thread(addBlogMenuLinkThread).start();
+                        }
+                        notesMenu.setEnabled(true);
+                    }
+                    catch (Exception ex)
                     {
                         notesMenu.setEnabled(false);
                         //There are no notes, so return (stops NullPointerException)
-                        return;
                     }
-                    for (Note note : notes)
-                    {
-                        String typePastTense = note.getType();
-                        switch (typePastTense)
-                        {
-                            case "reblog":
-                                typePastTense = "reblogged";
-                                break;
-                            case "like":
-                                typePastTense = "liked";
-                                break;
-                        }
+                }
 
-                        AddBlogMenuLink addBlogMenuLinkThread = new AddBlogMenuLink(tumblrBackend, note.getBlogName(), notesMenu, jFrame);
-                        addBlogMenuLinkThread.setMenuItemText(note.getBlogName() + " " + typePastTense + " this");
-                        addBlogMenuLinkThread.setMainGUIJFrame(mainViewGUI.getJFrame());
-                        new Thread(addBlogMenuLinkThread).start();
-                    }
-                    notesMenu.setEnabled(true);
+                @Override
+                protected Note[] doInBackground() throws Exception
+                {
+                    return tumblrBackend.getCurrentNotes(photoPost);
                 }
             }
 
@@ -250,7 +262,7 @@ public abstract class PostViewer
             (new Thread(new SetLikeButton())).start();
             notesMenu.removeAll();
             (new Thread(new SetNotesInfo())).start();
-            (new Thread(new SetReblogInfo(),"Reblog Info load Thread")).start();
+            (new Thread(new SetReblogInfo(), "Reblog Info load Thread")).start();
         }
     }
 
