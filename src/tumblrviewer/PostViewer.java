@@ -166,6 +166,11 @@ public abstract class PostViewer
                 public void run()
                 {
                     Note[] notes = tumblrBackend.getCurrentNotes(photoPost);
+                    if (notes == null)
+                    {
+                        //There are no notes, so return (stops NullPointerException)
+                        return;
+                    }
                     for (Note note : notes)
                     {
                         String typePastTense = note.getType();
