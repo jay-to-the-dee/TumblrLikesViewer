@@ -113,7 +113,8 @@ public class AddBlogMenuLink implements Runnable
         @Override
         public void run()
         {
-            blogNameMenuItem.setIcon(tumblrBackend.getAvatar(blogName));
+            ImageIcon blogAvatarIcon = tumblrBackend.getAvatar(blogName);
+            blogNameMenuItem.setIcon(blogAvatarIcon);
         }
     }
 }
