@@ -19,6 +19,7 @@ package tumblrviewer;
 import com.tumblr.jumblr.types.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 import javax.swing.*;
 import static tumblrviewer.MainViewGUI.SINGLE_VIEW_MODE;
 import tumblrviewer.TumblrBackend.DisplayModes;
@@ -34,7 +35,6 @@ public abstract class PostViewer
     private final PhotoPost photoPost;
     private final MainViewGUI mainViewGUI;
     private final TumblrBackend tumblrBackend;
-    private String rebloggedFrom;
     private JMenu likedOrNotMenu;
     private JMenuItem likeItem;
     private JMenuItem unlikeItem;
@@ -123,7 +123,6 @@ public abstract class PostViewer
         rebloggedFromMenu = new JMenu();
 
         goToRebloggedFromItem = new JMenuItem("");
-        goToRebloggedFromItem.addActionListener(new RebloggedFromActionListener());
         rebloggedFromMenu.add(goToRebloggedFromItem);
 
         jMenuBar.add(rebloggedFromMenu);
@@ -206,21 +205,39 @@ public abstract class PostViewer
             }
         }
 
-        private class SetReblogInfo implements Runnable
+        private class SetReblogInfo extends SwingWorker<Map<String, Object>, Object>
         {
             @Override
-            public void run()
+            public Map<String, Object> doInBackground()
             {
-                //Reblogged from
-                rebloggedFrom = photoPost.getRebloggedFromName();
-                if (rebloggedFrom != null)
+                Map<String, Object> map = new HashMap();
+                String rebloggedFrom = photoPost.getRebloggedFromName();
+                map.put("rebloggedFrom", rebloggedFrom);
+                map.put("standardAvatar", tumblrBackend.getAvatar(rebloggedFrom));
+                map.put("bigAvatar", tumblrBackend.getAvatar(rebloggedFrom, 64));
+                return map;
+            }
+
+            @Override
+            protected void done()
+            {
+                try
                 {
-                    rebloggedFromMenu.setIcon(tumblrBackend.getAvatar(rebloggedFrom));
-                    rebloggedFromMenu.setText(java.util.ResourceBundle.getBundle("en_gb").getString("REBLOGGED FROM ") + rebloggedFrom);
-                    goToRebloggedFromItem.setText("Go to " + rebloggedFrom);
-                    goToRebloggedFromItem.setIcon(tumblrBackend.getAvatar(rebloggedFrom, 64));
+                    String rebloggedFrom = (String) get().get("rebloggedFrom");
+                    if (rebloggedFrom != null)
+                    {
+                        goToRebloggedFromItem.addActionListener(new RebloggedFromActionListener(rebloggedFrom));
+                        rebloggedFromMenu.setIcon((Icon) get().get("standardAvatar"));
+                        rebloggedFromMenu.setText(java.util.ResourceBundle.getBundle("en_gb").getString("REBLOGGED FROM ") + rebloggedFrom);
+                        goToRebloggedFromItem.setText("Go to " + rebloggedFrom);
+                        goToRebloggedFromItem.setIcon((Icon) get().get("bigAvatar"));
+                    }
+                    else
+                    {
+                        throw new Exception("Nothing to reblog");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
                     rebloggedFromMenu.setVisible(false);
                 }
@@ -233,12 +250,19 @@ public abstract class PostViewer
             (new Thread(new SetLikeButton())).start();
             notesMenu.removeAll();
             (new Thread(new SetNotesInfo())).start();
-            (new Thread(new SetReblogInfo())).start();
+            (new Thread(new SetReblogInfo(),"Reblog Info load Thread")).start();
         }
     }
 
     private class RebloggedFromActionListener implements ActionListener
     {
+        String rebloggedFrom;
+
+        public RebloggedFromActionListener(String rebloggedFrom)
+        {
+            this.rebloggedFrom = rebloggedFrom;
+        }
+
         @Override
         @SuppressWarnings("ResultOfObjectAllocationIgnored")
         public void actionPerformed(ActionEvent e)
