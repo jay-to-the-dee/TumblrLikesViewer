@@ -23,7 +23,6 @@ import javax.swing.*;
 import static tumblrviewer.MainViewGUI.SINGLE_VIEW_MODE;
 import tumblrviewer.TumblrBackend.DisplayModes;
 
-
 /**
  *
  * @author jonathan
@@ -123,7 +122,7 @@ public abstract class PostViewer
 
         rebloggedFromMenu = new JMenu();
 
-        goToRebloggedFromItem = new JMenuItem(java.util.ResourceBundle.getBundle("en_gb").getString("GO TO BLOG"));
+        goToRebloggedFromItem = new JMenuItem("");
         goToRebloggedFromItem.addActionListener(new RebloggedFromActionListener());
         rebloggedFromMenu.add(goToRebloggedFromItem);
 
