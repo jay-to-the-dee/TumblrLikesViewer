@@ -318,7 +318,7 @@ public class TumblrBackend
         return followingList;
     }
 
-    private LinkedHashSet<String> getAllUserFollowersCollection()
+    private synchronized LinkedHashSet<String> getAllUserFollowersCollection()
     {
         Blog blog = user.getBlogs().get(0); //TODO: Account for multiple blogs
         LinkedHashSet<String> followersList = new LinkedHashSet<>();
