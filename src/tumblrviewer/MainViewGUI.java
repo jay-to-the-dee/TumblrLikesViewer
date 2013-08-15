@@ -443,13 +443,24 @@ public class MainViewGUI
 
         private class SetUpCurrentUserFollowersMenu implements Runnable
         {
+            private static final int MAXIMUM_ITEMS_PER_MENU = 5;
+
             @Override
             public void run()
             {
+                int i = 0;
                 for (String blogName : tumblrBackend.getAllUserFollowers())
                 {
-                    AddBlogMenuLink addBlogMenuLinkThread = new AddBlogMenuLink(tumblrBackend, blogName, currentUserFollowersMenu, jFrame);
-                    new Thread(addBlogMenuLinkThread).start();
+                    if (i < MAXIMUM_ITEMS_PER_MENU)
+                    {
+                        AddBlogMenuLink addBlogMenuLinkThread = new AddBlogMenuLink(tumblrBackend, blogName, currentUserFollowersMenu, jFrame);
+                        new Thread(addBlogMenuLinkThread).start();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    i++;
                 }
                 currentUserFollowersMenu.setText(currentUserFollowersMenu.getText() + " (" + tumblrBackend.getAllUserFollowers().size() + ")");
                 currentUserFollowersMenu.setEnabled(true);
