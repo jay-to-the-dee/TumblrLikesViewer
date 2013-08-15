@@ -436,6 +436,7 @@ public class MainViewGUI
                     AddBlogMenuLink addBlogMenuLinkThread = new AddBlogMenuLink(tumblrBackend, blogName, currentUserFollowingMenu, jFrame);
                     new Thread(addBlogMenuLinkThread).start();
                 }
+                currentUserFollowingMenu.setText(currentUserFollowingMenu.getText() + " (" + tumblrBackend.getAllUserFollowing().size() + ")");
                 currentUserFollowingMenu.setEnabled(true);
             }
         }
@@ -450,6 +451,7 @@ public class MainViewGUI
                     AddBlogMenuLink addBlogMenuLinkThread = new AddBlogMenuLink(tumblrBackend, blogName, currentUserFollowersMenu, jFrame);
                     new Thread(addBlogMenuLinkThread).start();
                 }
+                currentUserFollowersMenu.setText(currentUserFollowersMenu.getText() + " (" + tumblrBackend.getAllUserFollowers().size() + ")");
                 currentUserFollowersMenu.setEnabled(true);
             }
         }
@@ -599,7 +601,7 @@ public class MainViewGUI
             frame.pack();
             frame.setResizable(false);
             frame.setVisible(true);
-            
+
             loaderThread = null;
         }
     }
