@@ -35,7 +35,7 @@ import tumblrviewer.TumblrBackend.DisplayModes;
  */
 public class MainViewGUI
 {
-    static final boolean SINGLE_VIEW_MODE = true;
+    static final boolean SINGLE_VIEW_MODE = false;
     private static final boolean AUTO_LOAD_AT_PAGE_END = true;
     private static final ImageIcon loadingImageIcon = new ImageIcon(MainViewGUI.class.getResource("load-avatar-64.gif"), "Loading avatar");
     private static final int MAXIMUM_BLOG_LINKS_PER_MENU = 30;
@@ -73,7 +73,14 @@ public class MainViewGUI
     public MainViewGUI(DisplayModes currentDisplayMode, String blogToView)
     {
         jFrame = new JFrame("Tumblr");
-        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        if (SINGLE_VIEW_MODE)
+        {
+            jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        }
+        else
+        {
+            jFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        }
         jFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         tumblrBackend = new TumblrBackend(this, currentDisplayMode, blogToView);
