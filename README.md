@@ -3,9 +3,12 @@ TumblrLikesViewer
 
 A graphical Java Tumblr client that utilises the Jumblr library
 
+### Current Travis status
+[![Build Status](https://travis-ci.org/jay-to-the-dee/TumblrLikesViewer.png?branch=master)](https://travis-ci.org/jay-to-the-dee/TumblrLikesViewer)
+
 ### Requirements
 * To get this to work you will need to put your API keys in the Keys.properties file
-* You will also need to use a [slightly patched version of the Jumblr API (found here)] (https://github.com/jay-to-the-dee/jumblr/tree/jumblr-patched), as the present 0.06 API is missing some features currently (which I'm trying to get pull requests put in for to fix)
+* You will also need to use the [slightly patched version of the Jumblr API (my fork found here)] (https://github.com/jay-to-the-dee/jumblr/tree/jumblr-patched) which is included in the lib/ folder, as the present 0.06 API is missing some features currently (which I'm trying to get pull requests put in for to fix)
 
 ### Current limitations
 * Only supports PhotoPost's (as it is the majority of Tumblr after all :P)
