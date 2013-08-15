@@ -472,6 +472,9 @@ public class MainViewGUI
                     }
                     else
                     {
+                        JMenuItem loadMoreBlogLinksMenuItem = new JMenuItem("+"+(userList.size()-i)+" more blogs");
+                        loadMoreBlogLinksMenuItem.setEnabled(false);
+                        currentUserFolMenu.add(loadMoreBlogLinksMenuItem);
                         break;
                     }
                 }
