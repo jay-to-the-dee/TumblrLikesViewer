@@ -38,7 +38,7 @@ public class MainViewGUI
     static final boolean SINGLE_VIEW_MODE = true;
     private static final boolean AUTO_LOAD_AT_PAGE_END = true;
     private static final ImageIcon loadingImageIcon = new ImageIcon(MainViewGUI.class.getResource("load-avatar-64.gif"), "Loading avatar");
-    private static final int MAXIMUM_BLOG_LINKS_PER_MENU = 6;
+    private static final int MAXIMUM_BLOG_LINKS_PER_MENU = 30;
     /* End of constants*/
     private final TumblrBackend tumblrBackend;
     private final JFrame jFrame;
@@ -459,13 +459,15 @@ public class MainViewGUI
                         return;
                 }
 
+                currentUserFolMenu.setText(currentUserFolMenu.getText() + " (" + userList.size() + ")");
+
                 int i = 0;
                 for (String blogName : userList)
                 {
                     if (i < MAXIMUM_BLOG_LINKS_PER_MENU)
                     {
-                        AddBlogMenuLink addBlogMenuLinkThread = new AddBlogMenuLink(tumblrBackend, blogName, currentUserFolMenu, jFrame);
-                        addBlogMenuLinkThread.run();
+                        AddBlogMenuLink addBlogMenuLink = new AddBlogMenuLink(tumblrBackend, blogName, currentUserFolMenu, jFrame);
+                        addBlogMenuLink.run();
                         i++;
                     }
                     else
@@ -473,7 +475,6 @@ public class MainViewGUI
                         break;
                     }
                 }
-                currentUserFolMenu.setText(currentUserFolMenu.getText() + " (" + userList.size() + ")");
                 currentUserFolMenu.setEnabled(true);
             }
         }
