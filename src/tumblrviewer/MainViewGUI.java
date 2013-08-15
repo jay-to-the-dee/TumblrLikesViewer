@@ -38,6 +38,7 @@ public class MainViewGUI
     static final boolean SINGLE_VIEW_MODE = true;
     private static final boolean AUTO_LOAD_AT_PAGE_END = true;
     private static final ImageIcon loadingImageIcon = new ImageIcon(MainViewGUI.class.getResource("load-avatar-64.gif"), "Loading avatar");
+    private static final int MAXIMUM_BLOG_LINKS_PER_MENU = 5;
     /* End of constants*/
     private final TumblrBackend tumblrBackend;
     private final JFrame jFrame;
@@ -54,6 +55,11 @@ public class MainViewGUI
     private JMenuItem avatarIconViewMenuItem;
     private JMenu currentUserFollowingMenu;
     private JMenu currentUserFollowersMenu;
+
+    private enum FolMenuMode
+    {
+        FOLLOWING, FOLLOWERS
+    };
 
     /**
      * Creates a new GUI for scrolling through a blog. More than one instance
@@ -338,8 +344,8 @@ public class MainViewGUI
             (new Thread(new SetUpFollowingOrNotMenu(), "Following or Not Menu Setup")).start();
             (new Thread(new SetUpCurrentUserOptionsMenu(), "Current User Options Setup")).start();
 
-            (new Thread(new SetUpCurrentUserFollowingMenu(), "Following Menu Setup")).start();
-            (new Thread(new SetUpCurrentUserFollowersMenu(), "Followers Menu Setup")).start();
+            (new Thread(new SetUpCurrentUserFolMenu(FolMenuMode.FOLLOWING), "Following Menu Setup")).start();
+            (new Thread(new SetUpCurrentUserFolMenu(FolMenuMode.FOLLOWERS), "Followers Menu Setup")).start();
         }
 
         private class SetModeMenuItems implements Runnable
@@ -424,46 +430,51 @@ public class MainViewGUI
             }
         }
 
-        private class SetUpCurrentUserFollowingMenu implements Runnable
+        private class SetUpCurrentUserFolMenu implements Runnable
         {
-            int menuMax = 25;
+            private final FolMenuMode mode;
 
-            @Override
-            public void run()
+            public SetUpCurrentUserFolMenu(FolMenuMode mode)
             {
-                for (String blogName : tumblrBackend.getAllUserFollowing())
-                {
-                    AddBlogMenuLink addBlogMenuLinkThread = new AddBlogMenuLink(tumblrBackend, blogName, currentUserFollowingMenu, jFrame);
-                    new Thread(addBlogMenuLinkThread).start();
-                }
-                currentUserFollowingMenu.setText(currentUserFollowingMenu.getText() + " (" + tumblrBackend.getAllUserFollowing().size() + ")");
-                currentUserFollowingMenu.setEnabled(true);
+                this.mode = mode;
             }
-        }
-
-        private class SetUpCurrentUserFollowersMenu implements Runnable
-        {
-            private static final int MAXIMUM_ITEMS_PER_MENU = 5;
 
             @Override
             public void run()
             {
-                int i = 0;
-                for (String blogName : tumblrBackend.getAllUserFollowers())
+                final JMenu currentUserFolMenu;
+                final Collection<String> userList;
+
+                switch (mode)
                 {
-                    if (i < MAXIMUM_ITEMS_PER_MENU)
+                    case FOLLOWING:
+                        currentUserFolMenu = currentUserFollowingMenu;
+                        userList = tumblrBackend.getAllUserFollowing();
+                        break;
+                    case FOLLOWERS:
+                        currentUserFolMenu = currentUserFollowersMenu;
+                        userList = tumblrBackend.getAllUserFollowers();
+                        break;
+                    default:
+                        return;
+                }
+
+                int i = 0;
+                for (String blogName : userList)
+                {
+                    if (i < MAXIMUM_BLOG_LINKS_PER_MENU)
                     {
-                        AddBlogMenuLink addBlogMenuLinkThread = new AddBlogMenuLink(tumblrBackend, blogName, currentUserFollowersMenu, jFrame);
+                        AddBlogMenuLink addBlogMenuLinkThread = new AddBlogMenuLink(tumblrBackend, blogName, currentUserFolMenu, jFrame);
                         new Thread(addBlogMenuLinkThread).start();
+                        i++;
                     }
                     else
                     {
                         break;
                     }
-                    i++;
                 }
-                currentUserFollowersMenu.setText(currentUserFollowersMenu.getText() + " (" + tumblrBackend.getAllUserFollowers().size() + ")");
-                currentUserFollowersMenu.setEnabled(true);
+                currentUserFolMenu.setText(currentUserFolMenu.getText() + " (" + userList.size() + ")");
+                currentUserFolMenu.setEnabled(true);
             }
         }
     }

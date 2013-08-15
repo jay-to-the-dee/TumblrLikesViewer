@@ -297,9 +297,9 @@ public class TumblrBackend
         return allUserFollowers;
     }
 
-    private synchronized HashSet<String> getAllUserFollowingCollection()
+    private synchronized LinkedHashSet<String> getAllUserFollowingCollection()
     {
-        HashSet<String> followingList = new HashSet<>();
+        LinkedHashSet<String> followingList = new LinkedHashSet<>();
         final int recordsLoadedPerPage = 20;
         int totalCount = user.getFollowingCount();
 
@@ -318,10 +318,10 @@ public class TumblrBackend
         return followingList;
     }
 
-    private HashSet<String> getAllUserFollowersCollection()
+    private LinkedHashSet<String> getAllUserFollowersCollection()
     {
         Blog blog = user.getBlogs().get(0); //TODO: Account for multiple blogs
-        HashSet<String> followersList = new HashSet<>();
+        LinkedHashSet<String> followersList = new LinkedHashSet<>();
         final int recordsLoadedPerPage = 20;
         int totalCount = blog.getFollowersCount();
 
