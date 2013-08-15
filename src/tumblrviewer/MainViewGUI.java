@@ -153,7 +153,7 @@ public class MainViewGUI
             imageLabel.setToolTipText(blogName);
         }
 
-        imageLabel.addMouseListener(new imageLabelMouseAdapter(this, photoPost, photoNumberInPost));
+        imageLabel.addMouseListener(new ImageLabelMouseAdapter(this, photoPost, photoNumberInPost));
 
         imageDisplay.add(imageLabel);
         imagesLoadedCounter++;
@@ -291,7 +291,7 @@ public class MainViewGUI
         avatarIconViewMenuItem = new JMenuItem();
         avatarIconViewMenuItem.setEnabled(false);
         avatarIconViewMenuItem.setIcon(loadingImageIcon);
-        avatarIconViewMenuItem.addActionListener(new avatarIconViewMenuItemActionListener());
+        avatarIconViewMenuItem.addActionListener(new AvatarIconViewMenuItemActionListener());
         modeSelectMenu.add(avatarIconViewMenuItem);
 
         followingOrNotMenu = new JMenu("...");
@@ -310,7 +310,7 @@ public class MainViewGUI
         currentUserOptionsMenu.setEnabled(false);
 
         currentUserGoToMenu = new JMenuItem("..."); //Will be replaced by users home blog
-        currentUserGoToMenu.addActionListener(new currentUserGoToMenuItemActionListener());
+        currentUserGoToMenu.addActionListener(new CurrentUserGoToMenuItemActionListener());
 
         currentUserFollowingMenu = new JMenu(java.util.ResourceBundle.getBundle("en_gb").getString("FOLLOWING"));
         currentUserFollowingMenu.setEnabled(false);
@@ -540,14 +540,14 @@ public class MainViewGUI
         }
     }
 
-    private class imageLabelMouseAdapter extends MouseAdapter implements Runnable
+    private class ImageLabelMouseAdapter extends MouseAdapter implements Runnable
     {
         private final PhotoPost photoPost;
         private final int photoNumberInPost;
         private final MainViewGUI mainViewGUI;
         private Thread loaderThread;
 
-        public imageLabelMouseAdapter(MainViewGUI mainViewGUI, PhotoPost photoPost, int photoNumberInPost)
+        public ImageLabelMouseAdapter(MainViewGUI mainViewGUI, PhotoPost photoPost, int photoNumberInPost)
         {
             this.photoPost = photoPost;
             this.photoNumberInPost = photoNumberInPost;
@@ -573,7 +573,7 @@ public class MainViewGUI
         }
     }
 
-    private class currentUserGoToMenuItemActionListener implements ActionListener
+    private class CurrentUserGoToMenuItemActionListener implements ActionListener
     {
         @Override
         public void actionPerformed(ActionEvent e)
@@ -589,7 +589,7 @@ public class MainViewGUI
         }
     }
 
-    private class avatarIconViewMenuItemActionListener implements ActionListener, Runnable
+    private class AvatarIconViewMenuItemActionListener implements ActionListener, Runnable
     {
         private Thread loaderThread;
 
