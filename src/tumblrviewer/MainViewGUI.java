@@ -451,22 +451,26 @@ public class MainViewGUI
             {
                 final JMenu currentUserFolMenu;
                 final Collection<String> userList;
+                final String menuItemText;
 
                 switch (mode)
                 {
                     case FOLLOWING:
                         currentUserFolMenu = currentUserFollowingMenu;
                         userList = tumblrBackend.getAllUserFollowing();
+                        menuItemText = "Following";
                         break;
                     case FOLLOWERS:
                         currentUserFolMenu = currentUserFollowersMenu;
                         userList = tumblrBackend.getAllUserFollowers();
+                        menuItemText = "Followers";
                         break;
                     default:
                         return;
                 }
 
-                currentUserFolMenu.setText(currentUserFolMenu.getText() + " (" + userList.size() + ")");
+                currentUserFolMenu.setText(menuItemText + " (" + userList.size() + ")");
+                currentUserFolMenu.removeAll(); //Remove all previous items on a refresh
 
                 int i = 0;
                 for (String blogName : userList)

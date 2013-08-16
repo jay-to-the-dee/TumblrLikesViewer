@@ -343,7 +343,10 @@ public class TumblrBackend
     public void followBlog(String blog)
     {
         client.follow(blog);
-        allUserFollowing.add(blog); //Update our internal list
+        LinkedHashSet<String> newAllUserFollowingSet = new LinkedHashSet<>(); //new list created so we can add new following blog to start of list
+        newAllUserFollowingSet.add(blog); //Update our internal list
+        newAllUserFollowingSet.addAll(allUserFollowing);
+        allUserFollowing = newAllUserFollowingSet;
     }
 
     public void unfollowBlog(String blog)
