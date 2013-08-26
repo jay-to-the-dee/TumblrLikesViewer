@@ -225,7 +225,7 @@ public abstract class PostViewer
                 Map<String, Object> map = new HashMap();
                 String rebloggedFrom = photoPost.getRebloggedFromName();
                 map.put("rebloggedFrom", rebloggedFrom);
-                map.put("standardAvatar", tumblrBackend.getAvatar(rebloggedFrom));
+                map.put("standardAvatar", tumblrBackend.getAvatar(rebloggedFrom, 16));
                 map.put("bigAvatar", tumblrBackend.getAvatar(rebloggedFrom, 64));
                 return map;
             }

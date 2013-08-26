@@ -34,7 +34,6 @@ public class TumblrBackend
     private static final int POSTS_LOADED_PER_UPDATE = 20;
     private static final boolean FULLSIZE_PHOTOS = false;
     static final int PHOTO_PREFERRED_SIZE = 500; // (100/250/400/500)
-    private static final int DEFAULT_AVATAR_SIZE = 16;
     final DisplayModes currentDisplayMode;
     /* End of constants*/
     private final MainViewGUI gui;
@@ -221,11 +220,6 @@ public class TumblrBackend
         PhotoPost detailedPhotoPost = PhotoPost.class.cast(posts.get(0));
 
         return detailedPhotoPost.getNotes();
-    }
-
-    public ImageIcon getAvatar(String user)
-    {
-        return getAvatar(user, DEFAULT_AVATAR_SIZE);
     }
 
     public ImageIcon getAvatar(String user, int avatarSize)

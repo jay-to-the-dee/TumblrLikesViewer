@@ -383,7 +383,7 @@ public class MainViewGUI
                 }
 
                 //Add avatar to mode selection menu
-                modeSelectMenu.setIcon(tumblrBackend.getAvatar(tumblrBackend.getCurrentViewingBlog()));
+                modeSelectMenu.setIcon(tumblrBackend.getAvatar(tumblrBackend.getCurrentViewingBlog(), 16));
 
                 //Add avatar to end of menu
                 avatarIconViewMenuItem.setIcon(tumblrBackend.getAvatar(tumblrBackend.getCurrentViewingBlog(), 64));
