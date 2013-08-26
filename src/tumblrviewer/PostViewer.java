@@ -182,6 +182,9 @@ public abstract class PostViewer
                                 case "like":
                                     typePastTense = "liked";
                                     break;
+                                case "reply":
+                                    typePastTense = "replied to";
+                                    break;
                             }
 
                             AddBlogMenuLink addBlogMenuLinkThread = new AddBlogMenuLink(tumblrBackend, note.getBlogName(), notesMenu, jFrame);
