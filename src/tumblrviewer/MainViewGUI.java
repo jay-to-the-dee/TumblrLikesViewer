@@ -483,8 +483,8 @@ public class MainViewGUI
                     }
                     else
                     {
-                        JMenuItem loadMoreBlogLinksMenuItem = new JMenuItem("+"+(userList.size()-i)+" more blogs");
-                        loadMoreBlogLinksMenuItem.setEnabled(false);
+                        JMenuItem loadMoreBlogLinksMenuItem = new JMenuItem("+" + (userList.size() - i) + " more blogs");
+                        loadMoreBlogLinksMenuItem.addActionListener(new MoreBlogLinks(jFrame, menuItemText, userList));
                         currentUserFolMenu.add(loadMoreBlogLinksMenuItem);
                         break;
                     }
