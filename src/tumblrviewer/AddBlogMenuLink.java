@@ -18,7 +18,6 @@ package tumblrviewer;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.concurrent.TimeUnit;
 import javax.swing.*;
 import static tumblrviewer.MainViewGUI.SINGLE_VIEW_MODE;
 import tumblrviewer.TumblrBackend.DisplayModes;
@@ -32,7 +31,6 @@ import tumblrviewer.TumblrBackend.DisplayModes;
 public class AddBlogMenuLink implements Runnable
 {
     private final static boolean LOAD_AVATAR_MENU_ICONS = true;
-    private final static int IMAGE_FETCH_TIMEOUT_SECONDS = 30;
 
     private final TumblrBackend tumblrBackend;
     private final String blogName;
@@ -78,7 +76,7 @@ public class AddBlogMenuLink implements Runnable
 
         if (LOAD_AVATAR_MENU_ICONS)
         {
-            AddMenuItemBlogIcon addMenuItemBlogIcon = new AddMenuItemBlogIcon(blogNameMenuItem);
+            AddBlogAvatarToAbstractButton addMenuItemBlogIcon = new AddBlogAvatarToAbstractButton(tumblrBackend, blogNameMenuItem, blogName, 16);
             addMenuItemBlogIcon.execute();
         }
     }
@@ -100,41 +98,6 @@ public class AddBlogMenuLink implements Runnable
                     mainGUIJFrame.dispose();
                 }
             }
-        }
-    }
-
-    private class AddMenuItemBlogIcon extends SwingWorker<ImageIcon, Object>
-    {
-        JMenuItem blogNameMenuItem;
-
-        public AddMenuItemBlogIcon(JMenuItem blogNameMenuItem)
-        {
-            super();
-            this.blogNameMenuItem = blogNameMenuItem;
-        }
-
-        @Override
-        protected void done()
-        {
-            try
-            {
-                ImageIcon avatarIcon = get(IMAGE_FETCH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-                if (avatarIcon == null)
-                {
-                    throw new Exception("Avatar not loaded");
-                }
-                blogNameMenuItem.setIcon(avatarIcon);
-            }
-            catch (Exception e)
-            {
-                System.err.println(e);
-            }
-        }
-
-        @Override
-        protected ImageIcon doInBackground() throws Exception
-        {
-            return tumblrBackend.getAvatar(blogName);
         }
     }
 }

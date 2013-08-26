@@ -37,7 +37,7 @@ public class MainViewGUI
 {
     static final boolean SINGLE_VIEW_MODE = true;
     private static final boolean AUTO_LOAD_AT_PAGE_END = true;
-    private static final ImageIcon loadingImageIcon = new ImageIcon(MainViewGUI.class.getResource("load-avatar-64.gif"), "Loading avatar");
+    static final ImageIcon loadingImageIcon = new ImageIcon(MainViewGUI.class.getResource("load-avatar-64.gif"), "Loading avatar");
     private static final int MAXIMUM_BLOG_LINKS_PER_MENU = 30;
     /* End of constants*/
     private final TumblrBackend tumblrBackend;
@@ -484,7 +484,7 @@ public class MainViewGUI
                     else
                     {
                         JMenuItem loadMoreBlogLinksMenuItem = new JMenuItem("+" + (userList.size() - i) + " more blogs");
-                        loadMoreBlogLinksMenuItem.addActionListener(new MoreBlogLinks(jFrame, menuItemText, userList));
+                        loadMoreBlogLinksMenuItem.addActionListener(new MoreBlogLinks(jFrame, menuItemText, userList, tumblrBackend));
                         currentUserFolMenu.add(loadMoreBlogLinksMenuItem);
                         break;
                     }

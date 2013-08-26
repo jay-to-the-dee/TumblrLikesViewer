@@ -22,6 +22,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import static tumblrviewer.MainViewGUI.SINGLE_VIEW_MODE;
 import tumblrviewer.TumblrBackend.DisplayModes;
 
@@ -34,16 +36,19 @@ public class MoreBlogLinks implements ActionListener
     final private JFrame jFrame;
     final private String menuItemText;
     final private Collection<String> userList;
+    private final TumblrBackend tumblrBackend;
     private JList list;
     private JDialog jDialog;
+    private JButton gotoBlogButton;
 
     final private static int BORDER_SIZE = 10;
 
-    public MoreBlogLinks(JFrame jFrame, String menuItemText, Collection<String> userList)
+    public MoreBlogLinks(JFrame jFrame, String menuItemText, Collection<String> userList, TumblrBackend tumblrBackend)
     {
         this.jFrame = jFrame;
         this.menuItemText = menuItemText;
         this.userList = userList;
+        this.tumblrBackend = tumblrBackend;
     }
 
     @Override
@@ -53,6 +58,7 @@ public class MoreBlogLinks implements ActionListener
         jDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         list = new JList(userList.toArray());
+        list.addListSelectionListener(new BlogLinksListSelectionListener());
 
         JScrollPane listScroller = new JScrollPane(list);
         listScroller.setPreferredSize(new Dimension(320, 600));
@@ -68,7 +74,9 @@ public class MoreBlogLinks implements ActionListener
         JPanel buttonPane = new JPanel();
         buttonPane.setLayout(new FlowLayout());
         buttonPane.setBorder(BorderFactory.createEmptyBorder(0, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE));
-        JButton gotoBlogButton = new JButton("Go to blog");
+        gotoBlogButton = new JButton("Go to selected blog");
+        gotoBlogButton.setMnemonic('G');
+        gotoBlogButton.setEnabled(false);
         gotoBlogButton.addActionListener(new GotoBlogActionListener());
         buttonPane.add(gotoBlogButton);
 
@@ -93,6 +101,28 @@ public class MoreBlogLinks implements ActionListener
             {
                 jFrame.dispose(); //Dispose of previous blog
             }
+        }
+    }
+
+    private class BlogLinksListSelectionListener implements ListSelectionListener
+    {
+        @Override
+        public void valueChanged(ListSelectionEvent e)
+        {
+            JList jList = (JList) e.getSource();
+            String blogName = (String) jList.getSelectedValue();
+            String newText = "Go to " + blogName;
+            
+            if (gotoBlogButton.getText().equals(newText))
+            {
+                return; //Do not update if same as before
+            }
+
+            gotoBlogButton.setEnabled(true);
+            gotoBlogButton.setText(newText);
+            gotoBlogButton.setIcon(MainViewGUI.loadingImageIcon);
+            AddBlogAvatarToAbstractButton loadBlogIcon = new AddBlogAvatarToAbstractButton(tumblrBackend, gotoBlogButton, blogName, 64);
+            loadBlogIcon.execute();
         }
     }
 }
