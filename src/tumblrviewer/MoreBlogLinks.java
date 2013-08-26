@@ -55,7 +55,7 @@ public class MoreBlogLinks implements ActionListener
         list = new JList(userList.toArray());
 
         JScrollPane listScroller = new JScrollPane(list);
-        listScroller.setPreferredSize(new Dimension(320, 200));
+        listScroller.setPreferredSize(new Dimension(320, 600));
         listScroller.setAlignmentX(LEFT_ALIGNMENT);
 
         Container contentPane = jDialog.getContentPane();
