@@ -38,7 +38,7 @@ public class MainViewGUI
     static final boolean SINGLE_VIEW_MODE = true;
     private static final boolean AUTO_LOAD_AT_PAGE_END = true;
     static final ImageIcon loadingImageIcon = new ImageIcon(MainViewGUI.class.getResource("load-avatar-64.gif"), "Loading avatar");
-    private static final int MAXIMUM_BLOG_LINKS_PER_MENU = 30;
+    static final int MAXIMUM_BLOG_LINKS_PER_MENU = 30;
     /* End of constants*/
     private final TumblrBackend tumblrBackend;
     private final JFrame jFrame;

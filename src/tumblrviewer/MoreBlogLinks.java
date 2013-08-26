@@ -80,6 +80,10 @@ public class MoreBlogLinks implements ActionListener
         gotoBlogButton.addActionListener(new GotoBlogActionListener());
         buttonPane.add(gotoBlogButton);
 
+        //Start here as this is where we left off on our +N more blogs menu
+        list.setSelectedIndex(MainViewGUI.MAXIMUM_BLOG_LINKS_PER_MENU);
+        list.ensureIndexIsVisible(list.getSelectedIndex());
+        
         contentPane.add(listPane, BorderLayout.CENTER);
         contentPane.add(buttonPane, BorderLayout.SOUTH);
 
@@ -112,7 +116,7 @@ public class MoreBlogLinks implements ActionListener
             JList jList = (JList) e.getSource();
             String blogName = (String) jList.getSelectedValue();
             String newText = "Go to " + blogName;
-            
+
             if (gotoBlogButton.getText().equals(newText))
             {
                 return; //Do not update if same as before
