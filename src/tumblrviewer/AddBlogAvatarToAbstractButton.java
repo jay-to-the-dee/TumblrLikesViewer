@@ -60,7 +60,7 @@ public class AddBlogAvatarToAbstractButton extends SwingWorker<ImageIcon, Object
     }
 
     @Override
-    protected ImageIcon doInBackground() throws Exception
+    protected ImageIcon doInBackground()
     {
         return tumblrBackend.getAvatar(blogName, avatarSize);
     }

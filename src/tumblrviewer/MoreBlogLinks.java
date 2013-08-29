@@ -40,6 +40,7 @@ public class MoreBlogLinks implements ActionListener
     private JList list;
     private JDialog jDialog;
     private JButton gotoBlogButton;
+    private Thread loadBlogIconThread;
 
     final private static int BORDER_SIZE = 10;
 
@@ -83,7 +84,7 @@ public class MoreBlogLinks implements ActionListener
         //Start here as this is where we left off on our +N more blogs menu
         list.setSelectedIndex(MainViewGUI.MAXIMUM_BLOG_LINKS_PER_MENU);
         list.ensureIndexIsVisible(list.getSelectedIndex());
-        
+
         contentPane.add(listPane, BorderLayout.CENTER);
         contentPane.add(buttonPane, BorderLayout.SOUTH);
 
@@ -124,9 +125,14 @@ public class MoreBlogLinks implements ActionListener
 
             gotoBlogButton.setEnabled(true);
             gotoBlogButton.setText(newText);
+            
+            if (loadBlogIconThread != null)
+            {
+                loadBlogIconThread.interrupt();
+            }
             gotoBlogButton.setIcon(MainViewGUI.loadingImageIcon);
-            AddBlogAvatarToAbstractButton loadBlogIcon = new AddBlogAvatarToAbstractButton(tumblrBackend, gotoBlogButton, blogName, 64);
-            loadBlogIcon.execute();
+            loadBlogIconThread = new Thread(new AddBlogAvatarToAbstractButton(tumblrBackend, gotoBlogButton, blogName, 64), "Load Blog Icon - " + blogName);
+            loadBlogIconThread.start();
         }
     }
 }
