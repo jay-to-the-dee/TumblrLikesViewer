@@ -19,6 +19,7 @@ package tumblrviewer;
 import com.tumblr.jumblr.types.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.NumberFormat;
 import java.util.*;
 import javax.swing.*;
 import static tumblrviewer.MainViewGUI.SINGLE_VIEW_MODE;
@@ -216,7 +217,8 @@ public abstract class PostViewer
 
                 //Rest of notes (the counter)
                 int noteCount = tumblrBackend.getCurrentNoteCount(photoPost);
-                notesMenu.setText(noteCount + " notes");
+                String noteCountString = NumberFormat.getIntegerInstance().format(noteCount);
+                notesMenu.setText(noteCountString + " notes");
             }
         }
 
