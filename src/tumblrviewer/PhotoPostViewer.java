@@ -44,11 +44,11 @@ public class PhotoPostViewer extends PostViewer
     }
 
     @Override
-    void loadMainContent(Thread refreshControlsThread)
+    void loadMainContent(PostViewer postViewer)
     {
         Thread loadMainContentThread = new Thread(new LoadMainContent(), "Post Content Loader");
         loadMainContentThread.start();
-        refreshControlsThread.start();
+        postViewer.doRefreshControls();
         photoPostAdditions();
     }
 

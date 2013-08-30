@@ -90,11 +90,10 @@ public abstract class PostViewer
 
     void loadFromTumblr()
     {
-        Thread refreshControlsThread = new Thread(new RefreshControls(), "PostViewer Refresh Controls");
-        loadMainContent(refreshControlsThread);
+        loadMainContent(this);
     }
 
-    abstract void loadMainContent(Thread refreshControlsThread);
+    abstract void loadMainContent(PostViewer postViewer);
 
     private JMenuBar createMenuBar()
     {
@@ -327,7 +326,7 @@ public abstract class PostViewer
                 likedOrNotMenu.setText(java.util.ResourceBundle.getBundle("en_gb").getString("LIKING"));
                 photoPost.like();
             }
-            (new Thread(new RefreshControls())).start();
+            doRefreshControls();
             loaderThread = null;
         }
     }
@@ -359,6 +358,7 @@ public abstract class PostViewer
             reblogMenu.setText(java.util.ResourceBundle.getBundle("en_gb").getString("REBLOGGING..."));
             tumblrBackend.reblogThis(photoPost);
             reblogMenu.setText(java.util.ResourceBundle.getBundle("en_gb").getString("REBLOGGED!"));
+            doRefreshControls();
             loaderThread = null;
         }
     }
@@ -366,5 +366,14 @@ public abstract class PostViewer
     public JFrame getjFrame()
     {
         return jFrame;
+    }
+
+    /**
+     * This method is used internally and externally to ensure that the menu bar
+     * control's at the top are properly up to date.
+     */
+    public void doRefreshControls()
+    {
+        (new Thread(new RefreshControls(), "Refresh PostViewer controls")).start();
     }
 }
