@@ -338,7 +338,7 @@ public class MainViewGUI
         jMenuBar.add(currentUserOptionsMenu);
         jMenuBar.add(followingOrNotMenu);
 
-        (new Thread(new RefreshControls(), "MainViewGUI Refresh Controls")).start();
+        doRefreshControls();
 
         return jMenuBar;
 
@@ -551,7 +551,7 @@ public class MainViewGUI
                 followingOrNotMenu.setText("Following...");
                 tumblrBackend.followBlog(tumblrBackend.getCurrentViewingBlog());
             }
-            (new Thread(new RefreshControls(), "MainViewGUI Refresh Controls")).start();
+            doRefreshControls();
             loaderThread = null;
         }
     }
@@ -672,5 +672,14 @@ public class MainViewGUI
                 jFrame.dispose();
             }
         }
+    }
+
+    /**
+     * This method is used internally and externally to ensure that the menu bar
+     * control's at the top are properly up to date.
+     */
+    public void doRefreshControls()
+    {
+        (new Thread(new RefreshControls(), "Refresh MainViewGUI controls")).start();
     }
 }
