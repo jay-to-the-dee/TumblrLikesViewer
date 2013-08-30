@@ -482,7 +482,7 @@ public class MainViewGUI
                         return;
                 }
 
-                currentUserFolMenu.setText(menuItemText + " (" + userList.size() + ")");
+                currentUserFolMenu.setText(menuItemText + " (" + NumberFormat.getIntegerInstance().format(userList.size()) + ")");
                 currentUserFolMenu.removeAll(); //Remove all previous items on a refresh
 
                 int i = 0;
@@ -496,7 +496,7 @@ public class MainViewGUI
                     }
                     else
                     {
-                        JMenuItem loadMoreBlogLinksMenuItem = new JMenuItem("+" + (userList.size() - i) + " more blogs");
+                        JMenuItem loadMoreBlogLinksMenuItem = new JMenuItem("+" + NumberFormat.getIntegerInstance().format(userList.size() - i) + " more blogs");
                         loadMoreBlogLinksMenuItem.addActionListener(new MoreBlogLinks(jFrame, menuItemText, userList, tumblrBackend));
                         currentUserFolMenu.add(loadMoreBlogLinksMenuItem);
                         break;
