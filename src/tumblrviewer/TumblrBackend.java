@@ -28,7 +28,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * This class serves as an interface between the Jumblr library
+ * and the GUI by providing methods required for the rest of the 
+ * programs's GUI interface. It gets the data on other classes behalf.
  * @author jonathan
  */
 public class TumblrBackend

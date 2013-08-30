@@ -26,7 +26,9 @@ import static tumblrviewer.MainViewGUI.SINGLE_VIEW_MODE;
 import tumblrviewer.TumblrBackend.DisplayModes;
 
 /**
- *
+ * This is the other major GUI window that display's a post bigger
+ * in a new window and then allows access to controls such as
+ * re-blogging, notes and liking.
  * @author jonathan
  */
 public abstract class PostViewer

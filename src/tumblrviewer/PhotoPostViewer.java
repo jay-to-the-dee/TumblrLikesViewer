@@ -22,7 +22,7 @@ import java.net.URL;
 import javax.swing.*;
 
 /**
- *
+ * The PostViewer designed specifically to view PhotoPost's
  * @author jonathan
  */
 public class PhotoPostViewer extends PostViewer
