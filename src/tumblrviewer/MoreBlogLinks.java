@@ -21,6 +21,8 @@ import static java.awt.Component.LEFT_ALIGNMENT;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -28,7 +30,8 @@ import static tumblrviewer.MainViewGUI.SINGLE_VIEW_MODE;
 import tumblrviewer.TumblrBackend.DisplayModes;
 
 /**
- *
+ * This is the dialog window which offers the user the user a big
+ * list of blogs to follow.
  * @author Jonathan <jay-to-the-dee@users.noreply.github.com>
  */
 public class MoreBlogLinks implements ActionListener
@@ -40,7 +43,6 @@ public class MoreBlogLinks implements ActionListener
     private JList list;
     private JDialog jDialog;
     private JButton gotoBlogButton;
-    private Thread loadBlogIconThread;
 
     final private static int BORDER_SIZE = 10;
 
@@ -62,7 +64,7 @@ public class MoreBlogLinks implements ActionListener
         list.addListSelectionListener(new BlogLinksListSelectionListener());
 
         JScrollPane listScroller = new JScrollPane(list);
-        listScroller.setPreferredSize(new Dimension(320, 600));
+        listScroller.setPreferredSize(new Dimension(400, 600));
         listScroller.setAlignmentX(LEFT_ALIGNMENT);
 
         Container contentPane = jDialog.getContentPane();
@@ -111,28 +113,78 @@ public class MoreBlogLinks implements ActionListener
 
     private class BlogLinksListSelectionListener implements ListSelectionListener
     {
+        String previouslyViewedBlogName = "";
+        private AddBlogTitleToButton loadBlogTitleWorker;
+        private AddBlogAvatarToAbstractButton loadBlogIconWorker;
+
         @Override
         public void valueChanged(ListSelectionEvent e)
         {
             JList jList = (JList) e.getSource();
             String blogName = (String) jList.getSelectedValue();
-            String newText = "Go to " + blogName;
+            String newText = "<html><p>Go to <b>" + blogName + "</b></p><br><p><br></p></html>";
 
-            if (gotoBlogButton.getText().equals(newText))
+            if (previouslyViewedBlogName.equals(blogName))
             {
                 return; //Do not update if same as before
+            }
+            else
+            {
+                previouslyViewedBlogName = blogName;
             }
 
             gotoBlogButton.setEnabled(true);
             gotoBlogButton.setText(newText);
-            
-            if (loadBlogIconThread != null)
+
+            if (loadBlogIconWorker != null)
             {
-                loadBlogIconThread.interrupt();
+                loadBlogIconWorker.cancel(true);
             }
             gotoBlogButton.setIcon(MainViewGUI.loadingImageIcon);
-            loadBlogIconThread = new Thread(new AddBlogAvatarToAbstractButton(tumblrBackend, gotoBlogButton, blogName, 64), "Load Blog Icon - " + blogName);
-            loadBlogIconThread.start();
+            loadBlogIconWorker = new AddBlogAvatarToAbstractButton(tumblrBackend, gotoBlogButton, blogName, 64);
+            loadBlogIconWorker.execute();
+
+            if (loadBlogTitleWorker != null)
+            {
+                loadBlogTitleWorker.cancel(true);
+            }
+            loadBlogTitleWorker = new AddBlogTitleToButton(blogName);
+            loadBlogTitleWorker.execute();
+        }
+
+        private class AddBlogTitleToButton extends SwingWorker<String, Object>
+        {
+            String blogName;
+
+            public AddBlogTitleToButton(String blogName)
+            {
+                this.blogName = blogName;
+            }
+
+            @Override
+            protected void done()
+            {
+                try
+                {
+                    String blogTitle = get();
+                    if (blogTitle.isEmpty())
+                    {
+                        blogTitle = "<br>";
+                    }
+                    String newText = "<html><p>Go to <b>" + blogName + "</b></p><br><p>" + blogTitle + "</p></html>";
+
+                    gotoBlogButton.setText(newText);
+                }
+                catch (CancellationException | InterruptedException | ExecutionException ex)
+                {
+                }
+            }
+
+            @Override
+            protected String doInBackground() throws Exception
+            {
+                return tumblrBackend.getBlogInfo(blogName).getTitle();
+            }
         }
     }
 }

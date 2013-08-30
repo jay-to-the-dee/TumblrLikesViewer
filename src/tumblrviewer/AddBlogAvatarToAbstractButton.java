@@ -16,11 +16,12 @@
  */
 package tumblrviewer;
 
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import javax.swing.*;
 
 /**
  * A class simply used to load up blog icon avatars onto any kind of button
+ *
  * @author Jonathan <jay-to-the-dee@users.noreply.github.com>
  */
 public class AddBlogAvatarToAbstractButton extends SwingWorker<ImageIcon, Object>
@@ -49,13 +50,12 @@ public class AddBlogAvatarToAbstractButton extends SwingWorker<ImageIcon, Object
             ImageIcon avatarIcon = get(IMAGE_FETCH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             if (avatarIcon == null)
             {
-                throw new Exception("Avatar not loaded");
+                return;
             }
             blogNameMenuItem.setIcon(avatarIcon);
         }
-        catch (Exception e)
+        catch (CancellationException | InterruptedException | ExecutionException | TimeoutException ex)
         {
-            System.err.println(e);
         }
     }
 

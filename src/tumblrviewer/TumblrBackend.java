@@ -21,7 +21,6 @@ import com.tumblr.jumblr.exceptions.JumblrException;
 import com.tumblr.jumblr.types.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import javax.imageio.ImageIO;
@@ -367,5 +366,10 @@ public class TumblrBackend
         }
 
         return true;
+    }
+    
+    public Blog getBlogInfo(String blogName)
+    {
+        return client.blogInfo(blogName);
     }
 }
