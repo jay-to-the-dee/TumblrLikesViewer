@@ -19,9 +19,12 @@ package tumblrviewer;
 import com.tumblr.jumblr.*;
 import com.tumblr.jumblr.exceptions.JumblrException;
 import com.tumblr.jumblr.types.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
@@ -229,9 +232,12 @@ public class TumblrBackend
         try
         {
             URL url = new URL(avatarUrl);
-            return new ImageIcon(url);
+            BufferedImage img;
+            img = ImageIO.read(url);
+
+            return new ImageIcon(img);
         }
-        catch (MalformedURLException e)
+        catch (IOException e)
         {
             return null;
         }
