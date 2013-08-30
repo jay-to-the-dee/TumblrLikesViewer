@@ -21,6 +21,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.swing.*;
@@ -379,7 +380,8 @@ public class MainViewGUI
                     modeItems.get(DisplayModes.DASHBOARD).setEnabled(true);
                 }
 
-                if (tumblrBackend.canViewLikes()) //Put this last as it involves a backend request
+                final boolean canViewLikes = tumblrBackend.canViewLikes();
+                if (canViewLikes) //Put this last as it involves a backend request
                 {
                     modeItems.get(DisplayModes.LIKES).setEnabled(true);
                 }
@@ -389,6 +391,15 @@ public class MainViewGUI
 
                 //Add avatar to end of menu
                 avatarIconViewMenuItem.setIcon(tumblrBackend.getAvatar(tumblrBackend.getCurrentViewingBlog(), 64));
+
+                final String newPostsText = java.util.ResourceBundle.getBundle("en_gb").getString("POSTS") + " (" + NumberFormat.getIntegerInstance().format(tumblrBackend.getPostsTotalForBlog(tumblrBackend.getCurrentViewingBlog())) + ")";
+                modeItems.get(DisplayModes.POSTS).setText(newPostsText);
+
+                if (canViewLikes)
+                {
+                    final String newLikesText = java.util.ResourceBundle.getBundle("en_gb").getString("LIKES") + " (" + NumberFormat.getIntegerInstance().format(tumblrBackend.getLikesTotalForBlog(tumblrBackend.getCurrentViewingBlog())) + ")";
+                    modeItems.get(DisplayModes.LIKES).setText(newLikesText);
+                }
             }
         }
 

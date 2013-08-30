@@ -367,9 +367,26 @@ public class TumblrBackend
 
         return true;
     }
-    
+
     public Blog getBlogInfo(String blogName)
     {
         return client.blogInfo(blogName);
+    }
+
+    public int getLikesTotalForBlog(String blogName)
+    {
+        if (isCurrentUsersBlog())
+        {
+            return user.getLikeCount();
+        }
+        else
+        {
+            return getBlogInfo(blogName).getLikeCount();
+        }
+    }
+
+    public int getPostsTotalForBlog(String blogName)
+    {
+        return getBlogInfo(blogName).getPostCount();
     }
 }
