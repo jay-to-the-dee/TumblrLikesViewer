@@ -140,7 +140,7 @@ public class MoreBlogLinks implements ActionListener
             {
                 loadBlogIconWorker.cancel(true);
             }
-            gotoBlogButton.setIcon(MainViewGUI.loadingImageIcon);
+            gotoBlogButton.setIcon(MainViewGUI.loading64ImageIcon);
             loadBlogIconWorker = new AddBlogAvatarToAbstractButton(tumblrBackend, gotoBlogButton, blogName, 64);
             loadBlogIconWorker.execute();
 

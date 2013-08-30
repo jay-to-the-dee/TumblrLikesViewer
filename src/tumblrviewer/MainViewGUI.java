@@ -37,7 +37,8 @@ public class MainViewGUI
 {
     static final boolean SINGLE_VIEW_MODE = true;
     private static final boolean AUTO_LOAD_AT_PAGE_END = true;
-    static final ImageIcon loadingImageIcon = new ImageIcon(MainViewGUI.class.getResource("load-avatar-64.gif"), "Loading avatar");
+    static final ImageIcon loading64ImageIcon = new ImageIcon(MainViewGUI.class.getResource("load-avatar-64.gif"), "Loading avatar");
+    static final ImageIcon transparent16ImageIcon = new ImageIcon(MainViewGUI.class.getResource("transparent-16.png"));
     static final int MAXIMUM_BLOG_LINKS_PER_MENU = 30;
     /* End of constants*/
     private final TumblrBackend tumblrBackend;
@@ -282,6 +283,7 @@ public class MainViewGUI
 
         modeSelectMenu = new JMenu("...");
         modeSelectMenu.setEnabled(false);
+        modeSelectMenu.setIcon(transparent16ImageIcon);
         ButtonGroup modeSelectGroup = new ButtonGroup();
         modeItems = new LinkedHashMap<>();
         modeItems.put(DisplayModes.POSTS, new JRadioButtonMenuItem(java.util.ResourceBundle.getBundle("en_gb").getString("POSTS")));
@@ -297,7 +299,7 @@ public class MainViewGUI
         }
         avatarIconViewMenuItem = new JMenuItem();
         avatarIconViewMenuItem.setEnabled(false);
-        avatarIconViewMenuItem.setIcon(loadingImageIcon);
+        avatarIconViewMenuItem.setIcon(loading64ImageIcon);
         avatarIconViewMenuItem.addActionListener(new AvatarIconViewMenuItemActionListener());
         modeSelectMenu.add(avatarIconViewMenuItem);
 
