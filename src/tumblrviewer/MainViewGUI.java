@@ -24,6 +24,7 @@ import java.net.URL;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.prefs.Preferences;
 import javax.swing.*;
 import javax.swing.event.*;
 import tumblrviewer.TumblrBackend.DisplayModes;
@@ -36,8 +37,9 @@ import tumblrviewer.TumblrBackend.DisplayModes;
  */
 public class MainViewGUI
 {
-    static final boolean SINGLE_VIEW_MODE = true;
-    private static final boolean AUTO_LOAD_AT_PAGE_END = true;
+    static Preferences prefs;
+    static boolean SINGLE_VIEW_MODE;
+    private static boolean AUTO_LOAD_AT_PAGE_END;
     static final ImageIcon loading64ImageIcon = new ImageIcon(MainViewGUI.class.getResource("load-avatar-64.gif"), "Loading avatar");
     static final ImageIcon transparent16ImageIcon = new ImageIcon(MainViewGUI.class.getResource("transparent-16.png"));
     static final int MAXIMUM_BLOG_LINKS_PER_MENU = 30;
@@ -74,6 +76,11 @@ public class MainViewGUI
      */
     public MainViewGUI(DisplayModes currentDisplayMode, String blogToView)
     {
+        prefs = Preferences.userRoot().node(this.getClass().getPackage().getName());
+        
+        SINGLE_VIEW_MODE = prefs.getBoolean("SINGLE_VIEW_MODE", true);
+        AUTO_LOAD_AT_PAGE_END = prefs.getBoolean("AUTO_LOAD_AT_PAGE_END", true);
+        
         jFrame = new JFrame("Tumblr");
         if (SINGLE_VIEW_MODE)
         {

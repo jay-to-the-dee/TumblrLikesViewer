@@ -28,16 +28,17 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /**
- * This class serves as an interface between the Jumblr library
- * and the GUI by providing methods required for the rest of the 
- * programs's GUI interface. It gets the data on other classes behalf.
+ * This class serves as an interface between the Jumblr library and the GUI by
+ * providing methods required for the rest of the programs's GUI interface. It
+ * gets the data on other classes behalf.
+ *
  * @author jonathan
  */
 public class TumblrBackend
 {
-    private static final int POSTS_LOADED_PER_UPDATE = 20;
-    private static final boolean FULLSIZE_PHOTOS = false;
-    static final int PHOTO_PREFERRED_SIZE = 500; // (100/250/400/500)
+    private static int POSTS_LOADED_PER_UPDATE;
+    private static boolean FULLSIZE_PHOTOS;
+    static int PHOTO_PREFERRED_SIZE; // (100/250/400/500) (Default 500)
     final DisplayModes currentDisplayMode;
     /* End of constants*/
     private final MainViewGUI gui;
@@ -68,6 +69,10 @@ public class TumblrBackend
     {
         this.gui = gui;
         this.currentDisplayMode = currentDisplayMode;
+
+        POSTS_LOADED_PER_UPDATE = MainViewGUI.prefs.getInt("POSTS_LOADED_PER_UPDATE", 20);
+        FULLSIZE_PHOTOS = MainViewGUI.prefs.getBoolean("FULLSIZE_PHOTOS", false);
+        PHOTO_PREFERRED_SIZE = MainViewGUI.prefs.getInt("PHOTO_PREFERRED_SIZE", 500);
 
         try
         {
