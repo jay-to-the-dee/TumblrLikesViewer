@@ -175,6 +175,7 @@ public class AppSettingsWindow extends javax.swing.JFrame
         bindingGroup.bind();
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void saveSettingsFromForm()
