@@ -77,10 +77,10 @@ public class MainViewGUI
     public MainViewGUI(DisplayModes currentDisplayMode, String blogToView)
     {
         prefs = Preferences.userRoot().node(this.getClass().getPackage().getName());
-        
+
         SINGLE_VIEW_MODE = prefs.getBoolean("SINGLE_VIEW_MODE", true);
         AUTO_LOAD_AT_PAGE_END = prefs.getBoolean("AUTO_LOAD_AT_PAGE_END", true);
-        
+
         jFrame = new JFrame("Tumblr");
         if (SINGLE_VIEW_MODE)
         {
@@ -342,9 +342,31 @@ public class MainViewGUI
         currentUserOptionsMenu.add(currentUserFollowingMenu);
         currentUserOptionsMenu.add(currentUserFollowersMenu);
 
+        JMenu appMenu = new JMenu("App");
+        JMenuItem configuratonWindowMenuItem = new JMenuItem("Settings");
+        configuratonWindowMenuItem.setMnemonic('C');
+        configuratonWindowMenuItem.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                java.awt.EventQueue.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        new AppSettingsWindow().setVisible(true);
+                    }
+                });
+            }
+        });
+
+        appMenu.add(configuratonWindowMenuItem);
+
         jMenuBar.add(modeSelectMenu);
         jMenuBar.add(currentUserOptionsMenu);
         jMenuBar.add(followingOrNotMenu);
+        jMenuBar.add(appMenu);
 
         doRefreshControls();
 
