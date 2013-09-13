@@ -90,7 +90,6 @@ public class AddBlogMenuLink implements Runnable
         public void actionPerformed(ActionEvent e)
         {
             JComponent sourceButton = (JComponent) e.getSource();
-            sourceButton.setEnabled(false);
             new MainViewGUI(DisplayModes.POSTS, blogName);
             if (SINGLE_VIEW_MODE)
             {
