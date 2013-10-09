@@ -100,6 +100,8 @@ public class MainViewGUI
         imageDisplay = new Container();
         imageDisplay.setLayout(new BoxLayout(imageDisplay, BoxLayout.Y_AXIS));
 
+        addBlogHTMLTitleAndDescription();
+
         JScrollPane jsp = new JScrollPane(imageDisplay, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         jsp.setWheelScrollingEnabled(true);
         jsp.getVerticalScrollBar().setUnitIncrement(50);
@@ -125,6 +127,27 @@ public class MainViewGUI
         jFrame.setMinimumSize(new Dimension(TumblrBackend.PHOTO_PREFERRED_SIZE + 25, TumblrBackend.PHOTO_PREFERRED_SIZE));
 
         moreButton.doClick();
+    }
+
+    private void addBlogHTMLTitleAndDescription()
+    {
+        final int maxTextWidth = TumblrBackend.PHOTO_PREFERRED_SIZE;
+
+        final String blogTitle = tumblrBackend.getBlogInfo(tumblrBackend.getCurrentViewingBlog()).getTitle();
+        JLabel blogTitleLabel = new JLabel("<html><div style=\"width:" + maxTextWidth + ";\"><font size=+2><b><center>" + blogTitle + "</center></b></font></div></html>");
+        blogTitleLabel.setHorizontalAlignment(JLabel.CENTER);
+        blogTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        imageDisplay.add(blogTitleLabel);
+
+        String blogDesc = tumblrBackend.getBlogInfo(tumblrBackend.getCurrentViewingBlog()).getDescription();
+        if (!blogDesc.toLowerCase().contains("<br")) //Only want to do this if blog desc doesn't already contain breakpoints
+        {
+            blogDesc = blogDesc.replaceAll("(\r\n|\n)", "<br />");
+        }
+        JLabel blogDescLabel = new JLabel("<html><div style=\"width:" + maxTextWidth + ";\">" + blogDesc + "</div></html>");
+        blogDescLabel.setHorizontalAlignment(JLabel.CENTER);
+        blogDescLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        imageDisplay.add(blogDescLabel);
     }
 
     /**
