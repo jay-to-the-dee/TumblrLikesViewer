@@ -24,6 +24,7 @@ import java.net.URL;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.prefs.Preferences;
 import javax.swing.*;
 import javax.swing.event.*;
 import tumblrviewer.TumblrBackend.DisplayModes;
@@ -36,8 +37,9 @@ import tumblrviewer.TumblrBackend.DisplayModes;
  */
 public class MainViewGUI
 {
-    static final boolean SINGLE_VIEW_MODE = true;
-    private static final boolean AUTO_LOAD_AT_PAGE_END = true;
+    static Preferences prefs;
+    static boolean SINGLE_VIEW_MODE;
+    private static boolean AUTO_LOAD_AT_PAGE_END;
     static final ImageIcon loading64ImageIcon = new ImageIcon(MainViewGUI.class.getResource("load-avatar-64.gif"), "Loading avatar");
     static final ImageIcon transparent16ImageIcon = new ImageIcon(MainViewGUI.class.getResource("transparent-16.png"));
     static final int MAXIMUM_BLOG_LINKS_PER_MENU = 30;
@@ -74,6 +76,11 @@ public class MainViewGUI
      */
     public MainViewGUI(DisplayModes currentDisplayMode, String blogToView)
     {
+        prefs = Preferences.userRoot().node(this.getClass().getPackage().getName());
+
+        SINGLE_VIEW_MODE = prefs.getBoolean("SINGLE_VIEW_MODE", true);
+        AUTO_LOAD_AT_PAGE_END = prefs.getBoolean("AUTO_LOAD_AT_PAGE_END", true);
+
         jFrame = new JFrame("Tumblr");
         if (SINGLE_VIEW_MODE)
         {
@@ -92,6 +99,8 @@ public class MainViewGUI
 
         imageDisplay = new Container();
         imageDisplay.setLayout(new BoxLayout(imageDisplay, BoxLayout.Y_AXIS));
+
+        addBlogHTMLTitleAndDescription();
 
         JScrollPane jsp = new JScrollPane(imageDisplay, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         jsp.setWheelScrollingEnabled(true);
@@ -118,6 +127,27 @@ public class MainViewGUI
         jFrame.setMinimumSize(new Dimension(TumblrBackend.PHOTO_PREFERRED_SIZE + 25, TumblrBackend.PHOTO_PREFERRED_SIZE));
 
         moreButton.doClick();
+    }
+
+    private void addBlogHTMLTitleAndDescription()
+    {
+        final int maxTextWidth = TumblrBackend.PHOTO_PREFERRED_SIZE;
+
+        final String blogTitle = tumblrBackend.getBlogInfo(tumblrBackend.getCurrentViewingBlog()).getTitle();
+        JLabel blogTitleLabel = new JLabel("<html><div style=\"width:" + maxTextWidth + ";\"><font size=+2><b><center>" + blogTitle + "</center></b></font></div></html>");
+        blogTitleLabel.setHorizontalAlignment(JLabel.CENTER);
+        blogTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        imageDisplay.add(blogTitleLabel);
+
+        String blogDesc = tumblrBackend.getBlogInfo(tumblrBackend.getCurrentViewingBlog()).getDescription();
+        if (!blogDesc.toLowerCase().contains("<br")) //Only want to do this if blog desc doesn't already contain breakpoints
+        {
+            blogDesc = blogDesc.replaceAll("(\r\n|\n)", "<br />");
+        }
+        JLabel blogDescLabel = new JLabel("<html><div style=\"width:" + maxTextWidth + ";\">" + blogDesc + "</div></html>");
+        blogDescLabel.setHorizontalAlignment(JLabel.CENTER);
+        blogDescLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        imageDisplay.add(blogDescLabel);
     }
 
     /**
@@ -335,9 +365,31 @@ public class MainViewGUI
         currentUserOptionsMenu.add(currentUserFollowingMenu);
         currentUserOptionsMenu.add(currentUserFollowersMenu);
 
+        JMenu appMenu = new JMenu("App");
+        JMenuItem configuratonWindowMenuItem = new JMenuItem("Settings");
+        configuratonWindowMenuItem.setMnemonic('C');
+        configuratonWindowMenuItem.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                java.awt.EventQueue.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        new AppSettingsWindow().setVisible(true);
+                    }
+                });
+            }
+        });
+
+        appMenu.add(configuratonWindowMenuItem);
+
         jMenuBar.add(modeSelectMenu);
         jMenuBar.add(currentUserOptionsMenu);
         jMenuBar.add(followingOrNotMenu);
+        jMenuBar.add(appMenu);
 
         doRefreshControls();
 

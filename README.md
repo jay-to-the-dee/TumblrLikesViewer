@@ -20,5 +20,5 @@ A graphical Java Tumblr client that utilises the Jumblr library
 ### Current limitations
 * Currently only supports PhotoPost's (as it is the majority of Tumblr after all :P)
 * No way of logging on without using Keys.properties (something more elegant is on the TODO list)
-* Notes, followers and following menu's are usually too big and go off screen (a way of managing this is needed)
+* Notes, ~~followers and following~~ menu's are usually too big and go off screen (a way of managing this is needed)
 * Internationalisation support is implemented but currently patchy - will be cleaned up at a later date

@@ -30,7 +30,7 @@ import tumblrviewer.TumblrBackend.DisplayModes;
  */
 public class AddBlogMenuLink implements Runnable
 {
-    private final static boolean LOAD_AVATAR_MENU_ICONS = true;
+    private static boolean LOAD_AVATAR_MENU_ICONS;
 
     private final TumblrBackend tumblrBackend;
     private final String blogName;
@@ -46,6 +46,8 @@ public class AddBlogMenuLink implements Runnable
         this.menuItemText = blogName;
         this.menu = menu;
         this.jFrame = jFrame;
+        
+        LOAD_AVATAR_MENU_ICONS = MainViewGUI.prefs.getBoolean("LOAD_AVATAR_MENU_ICONS", true);
     }
 
     public void setMenuItemText(String menuItemText)
@@ -88,7 +90,6 @@ public class AddBlogMenuLink implements Runnable
         public void actionPerformed(ActionEvent e)
         {
             JComponent sourceButton = (JComponent) e.getSource();
-            sourceButton.setEnabled(false);
             new MainViewGUI(DisplayModes.POSTS, blogName);
             if (SINGLE_VIEW_MODE)
             {
