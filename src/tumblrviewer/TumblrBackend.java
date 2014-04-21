@@ -199,7 +199,7 @@ public class TumblrBackend
         return client.blogPost(blogName, postId).isLiked();
     }
 
-    public int getCurrentNoteCount(Post post)
+    public Long getCurrentNoteCount(Post post)
     {
         String blogName = post.getBlogName();
         Long postId = post.getId();
@@ -228,13 +228,15 @@ public class TumblrBackend
         java.util.List<Post> posts = client.blogPosts(blogName, params);
         PhotoPost detailedPhotoPost = PhotoPost.class.cast(posts.get(0));
 
-        return detailedPhotoPost.getNotes();
+        return (Note[]) detailedPhotoPost.getNotes().toArray();
     }
 
     public ImageIcon getAvatar(String user, int avatarSize)
     {
-        String avatarUrl = "http://api.tumblr.com/v2" + JumblrClient.blogPath(user, "/avatar/" + avatarSize);
+        //String avatarUrl = "http://api.tumblr.com/v2" + JumblrClient.blogPath(user, "/avatar/" + avatarSize);
 
+        String avatarUrl = client.blogAvatar(user, avatarSize);
+       
         try
         {
             URL url = new URL(avatarUrl);

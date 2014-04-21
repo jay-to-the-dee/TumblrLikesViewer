@@ -217,7 +217,7 @@ public abstract class PostViewer
                 (new Thread(new SetUpNotesMenu())).start();
 
                 //Rest of notes (the counter)
-                int noteCount = tumblrBackend.getCurrentNoteCount(photoPost);
+                Long noteCount = tumblrBackend.getCurrentNoteCount(photoPost);
                 String noteCountString = NumberFormat.getIntegerInstance().format(noteCount);
                 notesMenu.setText(noteCountString + " notes");
             }
