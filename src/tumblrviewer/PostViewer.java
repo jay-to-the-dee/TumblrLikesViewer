@@ -185,7 +185,7 @@ public abstract class PostViewer
                                 AddBlogMenuLink addBlogMenuLinkThread = new AddBlogMenuLink(tumblrBackend, note.getBlogName(), notesMenu, jFrame);
                                 addBlogMenuLinkThread.setMenuItemText(noteString);
                                 addBlogMenuLinkThread.setMainGUIJFrame(mainViewGUI.getJFrame());
-                                new Thread(addBlogMenuLinkThread).start();
+                                addBlogMenuLinkThread.run();
                                 i++;
                             }
                             else
