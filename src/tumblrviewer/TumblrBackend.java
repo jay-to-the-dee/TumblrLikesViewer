@@ -215,7 +215,7 @@ public class TumblrBackend
         return detailedPhotoPost.getNoteCount();
     }
 
-    public Note[] getCurrentNotes(Post post)
+    public List<Note> getCurrentNotes(Post post)
     {
         String blogName = post.getBlogName();
         Long postId = post.getId();
@@ -228,7 +228,7 @@ public class TumblrBackend
         java.util.List<Post> posts = client.blogPosts(blogName, params);
         PhotoPost detailedPhotoPost = PhotoPost.class.cast(posts.get(0));
 
-        return (Note[]) detailedPhotoPost.getNotes().toArray();
+        return detailedPhotoPost.getNotes();
     }
 
     public ImageIcon getAvatar(String user, int avatarSize)

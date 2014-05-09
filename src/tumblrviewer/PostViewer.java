@@ -161,14 +161,14 @@ public abstract class PostViewer
 
         private class SetNotesInfo implements Runnable
         {
-            private class SetUpNotesMenu extends SwingWorker<Note[], Object>
+            private class SetUpNotesMenu extends SwingWorker<java.util.List<Note>, Object>
             {
                 @Override
                 public void done()
                 {
                     try
                     {
-                        Note[] notes = get();
+                        java.util.List<Note> notes = get();
                         if (notes == null)
                         {
                             throw new Exception("No notes!");
@@ -204,7 +204,7 @@ public abstract class PostViewer
                 }
 
                 @Override
-                protected Note[] doInBackground() throws Exception
+                protected java.util.List<Note> doInBackground() throws Exception
                 {
                     return tumblrBackend.getCurrentNotes(photoPost);
                 }
