@@ -50,6 +50,24 @@ public class TumblrBackend
     static private HashSet<String> allUserFollowing;
     static private HashSet<String> allUserFollowers;
 
+    public String getNoteTypePastTense(String type)
+    {
+        String typePastTense = type;
+        switch (type)
+        {
+            case "reblog":
+                typePastTense = "reblogged";
+                break;
+            case "like":
+                typePastTense = "liked";
+                break;
+            case "reply":
+                typePastTense = "replied to";
+                break;
+        }
+        return typePastTense;
+    }
+
     public enum DisplayModes
     {
         POSTS, LIKES, DASHBOARD
@@ -142,11 +160,11 @@ public class TumblrBackend
                     if (isCurrentUsersBlog())
                     {
                         posts = client.userLikes(params); //Use different method because current user might have set likes to private
-                }
-                else
-                {
-                    posts = client.blogLikes(currentlyViewingBlog, params);
-                }
+                    }
+                    else
+                    {
+                        posts = client.blogLikes(currentlyViewingBlog, params);
+                    }
                     break;
                 case DASHBOARD:
                     posts = client.userDashboard(params);
@@ -236,7 +254,7 @@ public class TumblrBackend
         //String avatarUrl = "http://api.tumblr.com/v2" + JumblrClient.blogPath(user, "/avatar/" + avatarSize);
 
         String avatarUrl = client.blogAvatar(user, avatarSize);
-       
+
         try
         {
             URL url = new URL(avatarUrl);

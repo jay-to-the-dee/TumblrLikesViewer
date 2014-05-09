@@ -549,7 +549,7 @@ public class MainViewGUI
                     else
                     {
                         JMenuItem loadMoreBlogLinksMenuItem = new JMenuItem("+" + NumberFormat.getIntegerInstance().format(userList.size() - i) + " more blogs");
-                        loadMoreBlogLinksMenuItem.addActionListener(new MoreBlogLinks(jFrame, menuItemText, userList, tumblrBackend));
+                        loadMoreBlogLinksMenuItem.addActionListener(new MoreBlogLinks(jFrame, menuItemText, null, userList, tumblrBackend));
                         currentUserFolMenu.add(loadMoreBlogLinksMenuItem);
                         break;
                     }

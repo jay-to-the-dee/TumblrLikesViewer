@@ -22,6 +22,7 @@ import java.awt.event.*;
 import java.text.NumberFormat;
 import java.util.*;
 import javax.swing.*;
+import static tumblrviewer.MainViewGUI.MAXIMUM_BLOG_LINKS_PER_MENU;
 import static tumblrviewer.MainViewGUI.SINGLE_VIEW_MODE;
 import tumblrviewer.TumblrBackend.DisplayModes;
 
@@ -29,6 +30,7 @@ import tumblrviewer.TumblrBackend.DisplayModes;
  * This is the other major GUI window that display's a post bigger
  * in a new window and then allows access to controls such as
  * re-blogging, notes and liking.
+ *
  * @author jonathan
  */
 public abstract class PostViewer
@@ -173,26 +175,26 @@ public abstract class PostViewer
                         {
                             throw new Exception("No notes!");
                         }
+                        int i = 0;
                         for (Note note : notes)
                         {
-                            String typePastTense = note.getType();
-                            switch (typePastTense)
+                            String typePastTense = tumblrBackend.getNoteTypePastTense(note.getType());
+                            String noteString = note.getBlogName() + " " + typePastTense + " this";
+                            if (i < MAXIMUM_BLOG_LINKS_PER_MENU)
                             {
-                                case "reblog":
-                                    typePastTense = "reblogged";
-                                    break;
-                                case "like":
-                                    typePastTense = "liked";
-                                    break;
-                                case "reply":
-                                    typePastTense = "replied to";
-                                    break;
+                                AddBlogMenuLink addBlogMenuLinkThread = new AddBlogMenuLink(tumblrBackend, note.getBlogName(), notesMenu, jFrame);
+                                addBlogMenuLinkThread.setMenuItemText(noteString);
+                                addBlogMenuLinkThread.setMainGUIJFrame(mainViewGUI.getJFrame());
+                                new Thread(addBlogMenuLinkThread).start();
+                                i++;
                             }
-
-                            AddBlogMenuLink addBlogMenuLinkThread = new AddBlogMenuLink(tumblrBackend, note.getBlogName(), notesMenu, jFrame);
-                            addBlogMenuLinkThread.setMenuItemText(note.getBlogName() + " " + typePastTense + " this");
-                            addBlogMenuLinkThread.setMainGUIJFrame(mainViewGUI.getJFrame());
-                            new Thread(addBlogMenuLinkThread).start();
+                            else
+                            {
+                                JMenuItem loadMoreBlogLinksMenuItem = new JMenuItem("+" + NumberFormat.getIntegerInstance().format(notes.size() - i) + " more blogs");
+                                loadMoreBlogLinksMenuItem.addActionListener(new MoreBlogLinks(jFrame, "Notes", notes, null, tumblrBackend));
+                                notesMenu.add(loadMoreBlogLinksMenuItem);
+                                break;
+                            }
                         }
                         notesMenu.setEnabled(true);
                     }

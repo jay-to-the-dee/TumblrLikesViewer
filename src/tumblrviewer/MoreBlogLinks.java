@@ -16,11 +16,13 @@
  */
 package tumblrviewer;
 
+import com.tumblr.jumblr.types.Note;
 import java.awt.*;
 import static java.awt.Component.LEFT_ALIGNMENT;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
@@ -32,26 +34,74 @@ import tumblrviewer.TumblrBackend.DisplayModes;
 /**
  * This is the dialog window which offers the user the user a big
  * list of blogs to follow.
+ *
  * @author Jonathan <jay-to-the-dee@users.noreply.github.com>
  */
 public class MoreBlogLinks implements ActionListener
 {
     final private JFrame jFrame;
     final private String menuItemText;
-    final private Collection<String> userList;
+    private final Collection<Note> notes;
+    private Collection<String> userList;
     private final TumblrBackend tumblrBackend;
     private JList list;
     private JDialog jDialog;
     private JButton gotoBlogButton;
+    final private LinkedHashSet<BlogListing> blogListings;
 
     final private static int BORDER_SIZE = 10;
 
-    public MoreBlogLinks(JFrame jFrame, String menuItemText, Collection<String> userList, TumblrBackend tumblrBackend)
+    public MoreBlogLinks(JFrame jFrame, String menuItemText, Collection<Note> notes, Collection<String> userList, TumblrBackend tumblrBackend)
     {
         this.jFrame = jFrame;
         this.menuItemText = menuItemText;
+        this.notes = notes;
         this.userList = userList;
         this.tumblrBackend = tumblrBackend;
+
+        if (userList == null && notes != null)
+        {
+            //We're in notes mode!
+            this.blogListings = new LinkedHashSet<>();
+            for (Note note : notes)
+            {
+                String typePastTense = tumblrBackend.getNoteTypePastTense(note.getType());
+                String noteString = note.getBlogName() + " " + typePastTense + " this";
+                this.blogListings.add(new BlogListing(note.getBlogName(), noteString));
+            }
+        }
+        else
+        {
+            this.blogListings = new LinkedHashSet<>();
+            for (String user : userList)
+            {
+                this.blogListings.add(new BlogListing(user, user));
+            }
+        }
+    }
+
+    private class BlogListing
+    {
+        final String blogName;
+        final String blogListingText;
+
+        public BlogListing(String blogName, String blogListingText)
+        {
+            this.blogName = blogName;
+            this.blogListingText = blogListingText;
+        }
+
+        public String getBlogName()
+        {
+            return blogName;
+        }
+
+        @Override
+        public String toString()
+        {
+            return blogListingText;
+        }
+
     }
 
     @Override
@@ -60,7 +110,7 @@ public class MoreBlogLinks implements ActionListener
         jDialog = new JDialog(jFrame, menuItemText);
         jDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-        list = new JList(userList.toArray());
+        list = new JList(blogListings.toArray());
         list.addListSelectionListener(new BlogLinksListSelectionListener());
 
         JScrollPane listScroller = new JScrollPane(list);
@@ -100,7 +150,8 @@ public class MoreBlogLinks implements ActionListener
         @SuppressWarnings("ResultOfObjectAllocationIgnored")
         public void actionPerformed(ActionEvent e)
         {
-            String blogToGoTo = (String) list.getSelectedValue();
+            BlogListing blogListing = (BlogListing) list.getSelectedValue();
+            String blogToGoTo =  blogListing.getBlogName();
             jDialog.dispose();  //Dispose of this dialog
 
             new MainViewGUI(DisplayModes.POSTS, blogToGoTo);
@@ -121,7 +172,8 @@ public class MoreBlogLinks implements ActionListener
         public void valueChanged(ListSelectionEvent e)
         {
             JList jList = (JList) e.getSource();
-            String blogName = (String) jList.getSelectedValue();
+            BlogListing blogListing = (BlogListing) list.getSelectedValue();
+            String blogName =  blogListing.getBlogName();
             String newText = "<html><p>Go to <b>" + blogName + "</b></p><br><p><br></p></html>";
 
             if (previouslyViewedBlogName.equals(blogName))
@@ -154,7 +206,7 @@ public class MoreBlogLinks implements ActionListener
 
         private class AddBlogTitleToButton extends SwingWorker<String, Object>
         {
-            String blogName;
+            final String blogName;
 
             public AddBlogTitleToButton(String blogName)
             {
@@ -186,5 +238,7 @@ public class MoreBlogLinks implements ActionListener
                 return tumblrBackend.getBlogInfo(blogName).getTitle();
             }
         }
+
     }
+
 }
